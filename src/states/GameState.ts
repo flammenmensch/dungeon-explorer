@@ -1,4 +1,5 @@
 import Board from '../prefabs/Board';
+import Item from '../prefabs/Item';
 
 interface IPlayerStats {
   health:number;
@@ -39,8 +40,22 @@ export default class GameState extends Phaser.State {
 
   protected __backgroundTiles:Phaser.Group;
 
+  protected __mapElements:Phaser.Group;
+
   get backgroundTiles():Phaser.Group {
     return this.__backgroundTiles;
+  }
+
+  get mapElements():Phaser.Group {
+    return this.__mapElements;
+  }
+
+  get board():Board {
+    return this.__board;
+  }
+
+  get playerStats():IPlayerStats {
+    return this.__playerStats;
   }
 
   init(data:IGameData=defaultGameData) {
@@ -51,11 +66,24 @@ export default class GameState extends Phaser.State {
   create() {
     this.__backgroundTiles = this.add.group();
 
+    this.__mapElements = this.add.group();
+
     this.__board = new Board(this, {
       rows: ROWS,
       cols: COLS,
       tileSize: TILE_SIZE
     });
+
+    this.__mapElements.add(new Item(this, {
+      row: 3,
+      col: 2,
+      frame: 20,
+      type: 'consumable',
+      health: 10,
+      attack: 0,
+      defense: 1,
+      gold: 100
+    }));
   }
 
   protected gameOver():void {

@@ -18,8 +18,6 @@ export default class Board {
 
   protected __tileSize:number;
 
-  protected __numCells:number = 0;
-
   protected __state:GameState;
 
   protected __game:Phaser.Game;
@@ -30,7 +28,6 @@ export default class Board {
     this.__rows = config.rows;
     this.__cols = config.cols;
     this.__tileSize = config.tileSize;
-    this.__numCells = this.__rows * this.__cols;
     this.__state = state;
     this.__game = state.game;
 
@@ -47,7 +44,30 @@ export default class Board {
     }
   }
 
-  protected getSurroundingTiles(coordinates:ITileCoordinates):Array<ITileCoordinates> {
+  get tileSize():number {
+    return this.__tileSize;
+  }
+
+  get numCells():number {
+    return this.__rows * this.__cols;
+  }
+
+  get rows():number {
+    return this.__rows;
+  }
+
+  get cols():number {
+    return this.__cols;
+  }
+
+  getXYFromRowCol(coordinates:ITileCoordinates):Phaser.Point {
+    return new Phaser.Point(
+      coordinates.col * this.__tileSize + this.__tileSize * .5,
+      coordinates.row * this.__tileSize + this.__tileSize * .5
+    );
+  }
+
+  getSurroundingTiles(coordinates:ITileCoordinates):Array<ITileCoordinates> {
     const adjacentTiles:Array<ITileCoordinates> = [];
     const relativePositions = [
       { row:  1, col: -1 },
