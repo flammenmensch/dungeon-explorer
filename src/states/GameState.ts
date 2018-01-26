@@ -1,10 +1,5 @@
 import Board from '../prefabs/Board';
 
-const ROWS = 9;
-const COLS = 7;
-
-const TILE_SIZE = 48;
-
 interface IPlayerStats {
   health:number;
   attack:number;
@@ -14,22 +9,31 @@ interface IPlayerStats {
 }
 
 interface IGameData {
-
+  currentLevel:number;
+  playerStats:IPlayerStats;
 }
 
-export default class GameState extends Phaser.State {
+const ROWS = 9;
+const COLS = 7;
 
-  protected __data:IGameData = {};
+const TILE_SIZE = 48;
 
-  protected __currentLevel:number = 1;
-
-  protected __playerStats:IPlayerStats = {
+const defaultGameData:IGameData = {
+  currentLevel: 1,
+  playerStats: {
     health: 25,
     attack: 2,
     defense: 1,
     gold: 0,
     hasKey: false
-  };
+  }
+};
+
+export default class GameState extends Phaser.State {
+
+  protected __playerStats:IPlayerStats;
+
+  protected __currentLevel:number = 1;
 
   protected __board:Board;
 
@@ -37,6 +41,11 @@ export default class GameState extends Phaser.State {
 
   get backgroundTiles():Phaser.Group {
     return this.__backgroundTiles;
+  }
+
+  init(data:IGameData=defaultGameData) {
+    this.__currentLevel = data.currentLevel;
+    this.__playerStats = data.playerStats;
   }
 
   create() {
@@ -56,8 +65,7 @@ export default class GameState extends Phaser.State {
   protected nextLevel():void {
     this.game.state.start('Game', true, false, {
       currentLevel: this.__currentLevel + 1,
-      playerStats: { ...this.__playerStats }
+      playerStats: this.__playerStats
     });
   }
-
 }
