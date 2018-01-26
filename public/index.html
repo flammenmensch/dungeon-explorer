@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RPG Game</title>
+  <style>
+    /*@font-face {
+      font-family: "Kells";
+      src: url("assets/fonts/kells_uncial.ttf");
+    }*/
+    html {
+      height: 100%;
+    }
+    body {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      background-color: #111;
+    }
+    .font-preload {
+      font-family: "Kells";
+      position: absolute;
+      left: -100px;
+    }
+    #game {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+<div class="font-preload">.</div>
+<div id="game"></div>
+<script src="dungeon-explorer.js"></script>
+</body>
+</html>

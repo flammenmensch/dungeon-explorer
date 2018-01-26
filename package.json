@@ -1,0 +1,29 @@
+{
+  "name": "dungeon-explorer",
+  "version": "1.0.0",
+  "description": "Dungeon explorer game",
+  "main": "dist/dungeon-explorer.js",
+  "repository": "https://github.com/flammenmensch/dungeon-explorer.git",
+  "author": "Flammenmensch <maleventum@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "phaser-ce": "^2.10.0"
+  },
+  "devDependencies": {
+    "@types/node": "^9.3.0",
+    "clean-webpack-plugin": "^0.1.17",
+    "copy-webpack-plugin": "^4.3.1",
+    "expose-loader": "^0.7.4",
+    "ts-loader": "^3.3.1",
+    "tslint": "^5.9.1",
+    "tslint-loader": "^3.5.3",
+    "typescript": "^2.6.2",
+    "webpack": "^3.10.0",
+    "webpack-dev-server": "^2.11.1"
+  },
+  "scripts": {
+    "start": "webpack-dev-server --config webpack.config.js --progress --colors --watch --open",
+    "build": "webpack --progress --colors"
+  }
+}
