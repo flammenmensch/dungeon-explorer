@@ -1,16 +1,19 @@
 import {
   clearDarknessTile,
   createBackgroundTiles,
-  createDarkTiles, createEntrance, createExit, createItems, createKey, createMapElements, getFreeCell,
+  createDarkTiles, createEnemies, createEntrance, createExit, createItems, createKey, createMapElements, createProps,
+  getFreeCell,
 } from '../prefabs/Terrain';
-
-import * as boardUtils from '../utils/boardUtils';
 
 import {
   IBoardData, ICell,
   IGameData, ILevelData,
   IPlayerStats
 } from '../interfaces';
+
+import MapElement from '../prefabs/MapElement';
+import Item from '../prefabs/Item';
+import Enemy from '../prefabs/Enemy';
 
 const ROWS = 9;
 const COLS = 10;
@@ -72,29 +75,69 @@ export default class GameState extends Phaser.State {
   create() {
     this.__levelData = this.game.cache.getJSON('gameBaseData') as ILevelData;
 
-    this.__backgroundTiles = this.game.add.existing(createBackgroundTiles(this.game, this.__board, (cell:ICell, tile:Phaser.TileSprite):void => {
-      console.log('Clear');
+    this.__backgroundTiles = this.game.add.existing(createBackgroundTiles(this.game, this.__board, (cell:ICell):void => {
       clearDarknessTile(this.__darkTiles, this.__mapElements, cell, this.__board, true);
     }));
 
     this.__mapElements = this.game.add.existing(createMapElements(this.game, this.__board));
 
-    createItems(this.__mapElements, this.__board, this.__levelData, (cell:ICell, item:Phaser.TileSprite) => {
-      console.log('Collect item at', cell);
+    createProps(this.__mapElements, this.__board, this.__levelData);
+
+    createItems(this.__mapElements, this.__board, this.__levelData, (cell:ICell, item:Item) => {
       clearDarknessTile(this.__darkTiles, this.__mapElements, cell, this.__board, true);
+
+      this.__playerStats.gold += item.data.gold || 0;
+      this.__playerStats.health += item.data.health || 0;
+      this.__playerStats.attack += item.data.attack || 0;
+      this.__playerStats.defense += item.data.defense || 0;
+
+      this.refreshStats();
+
+      item.kill();
     });
 
-    createKey(this.__mapElements, getFreeCell(this.__mapElements, this.__board), this.__board, (cell:ICell, key:Phaser.TileSprite):void => {
+    createKey(this.__mapElements, this.__board, (cell:ICell, key:MapElement):void => {
+      clearDarknessTile(this.__darkTiles, this.__mapElements, cell, this.__board, true);
+
       this.__playerStats.hasKey = true;
-      key.alive = key.visible = key.exists = false;
+
+      this.refreshStats();
+
+      key.kill();
     });
 
-    createExit(this.__mapElements, getFreeCell(this.__mapElements, this.__board), this.__board, (cell:ICell) => {
+    createEnemies(this.__mapElements, this.__board, this.__levelData, (cell:ICell, enemy:Enemy):void => {
+      const damageAttacked = Math.max(0.5, this.__playerStats.attack * Math.random() - enemy.data.defense * Math.random());
+      const damageAttacker = Math.max(0.5, enemy.data.attack * Math.random() - this.__playerStats.defense * Math.random());
 
+      enemy.data.health -= damageAttacked;
+      this.__playerStats.health -= damageAttacker;
+
+      this.game.add.tween(enemy)
+        .to({ tint: 0xff0000 }, 300, null, true)
+        .onComplete.add(() => {
+          enemy.tint = 0xffffff;
+
+          this.refreshStats();
+
+          if (enemy.data.health <= 0) {
+            clearDarknessTile(this.__darkTiles, this.__mapElements, cell, this.__board, true);
+
+            this.__playerStats.gold += enemy.data.gold;
+            enemy.kill();
+          }
+
+          if (this.__playerStats.health <= 0) {
+            this.gameOver();
+          }
+        });
     });
 
-    const entranceCell = getFreeCell(this.__mapElements, this.__board);
-    createEntrance(this.__mapElements, entranceCell, this.__board);
+    /*createExit(this.__mapElements, getFreeCell(this.__mapElements, this.__board), this.__board, (cell:ICell) => {
+
+    });*/
+
+    const entranceCell = createEntrance(this.__mapElements, this.__board);
 
     this.__darkTiles = createDarkTiles(this.game, this.__board);
 
@@ -112,7 +155,14 @@ export default class GameState extends Phaser.State {
   }
 
   refreshStats():void {
+    this.__healthLabel.text = Math.ceil(this.__playerStats.health).toString();
+    this.__attackLabel.text = Math.ceil(this.__playerStats.attack).toString();
+    this.__defenseLabel.text = Math.ceil(this.__playerStats.defense).toString();
+    this.__goldLabel.text = Math.ceil(this.__playerStats.gold).toString();
 
+    this.__keyIcon.visible = this.__playerStats.hasKey;
+
+    this.__levelLabel.text = `Level ${this.__currentLevel}`;
   }
 
   nextLevel():void {
@@ -150,7 +200,7 @@ export default class GameState extends Phaser.State {
     this.__goldIcon = this.add.tileSprite(x, y + TILE_SIZE * 3, TILE_SIZE, TILE_SIZE, 'items', 15);
     this.__goldLabel = this.add.text(x + TILE_SIZE, y + TILE_SIZE * 3 + 18, '999+', style);
 
-    this.__keyIcon = this.add.tileSprite(this.game.width / 2 - TILE_SIZE / 2, y + TILE_SIZE * 2 - TILE_SIZE / 2, TILE_SIZE, TILE_SIZE, 'items', 0);
+    this.__keyIcon = this.add.tileSprite(this.game.width / 2 - TILE_SIZE / 2, y + TILE_SIZE * 2 - TILE_SIZE / 2, TILE_SIZE, TILE_SIZE, 'items', 6);
 
     this.__levelLabel = this.add.text(45, this.game.height - TILE_SIZE / 2, 'Level 1', style);
 

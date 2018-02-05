@@ -1,6 +1,17 @@
-import {IBoardData, ICell, ILevelData, IPoint} from '../interfaces';
+import {IBoardData, ICell, IEnemy, IItem, ILevelData, IPoint, IProp} from '../interfaces';
 import * as boardUtils from '../utils/boardUtils';
 import {randomBetween} from '../utils/mathUtils';
+import MapElement from './MapElement';
+import Item from './Item';
+import Enemy from './Enemy';
+
+const tileSets = [
+  [101, 104],
+  [121, 124],
+  [141, 144],
+  [205, 208],
+  [170, 170],
+];
 
 export const getFreeCell = (group:Phaser.Group, board:IBoardData):ICell => {
   let freeCell:ICell, currentCell:ICell, foundCell:boolean;
@@ -15,9 +26,10 @@ export const getFreeCell = (group:Phaser.Group, board:IBoardData):ICell => {
     col = randomBetween(0, board.cols, true);
 
     for (i = 0; i < len; i++) {
+      // FIXME Incorrect cell calculation
       currentCell = boardUtils.getCellFromIndex(i, board);
       currentChild = group.children[i] as Phaser.TileSprite;
-      if (currentChild.alive && currentCell.row === row && currentCell.col === col) {
+      if (currentChild && currentChild.alive && currentCell.row === row && currentCell.col === col) {
         foundCell = true;
         break;
       }
@@ -35,10 +47,11 @@ export const createBackgroundTiles = (game:Phaser.Game, board:IBoardData, onInpu
   const group = new Phaser.Group(game);
 
   let frame:number, tile:Phaser.TileSprite;
+  const selectedSet = game.rnd.integerInRange(0, tileSets.length - 1);
 
   for (let i:number = 0; i < board.rows; i++) {
     for (let j:number = 0; j < board.cols; j++) {
-      frame = game.rnd.integerInRange(205, 208);
+      frame = game.rnd.integerInRange(tileSets[selectedSet][0], tileSets[selectedSet][1]);
       tile = new Phaser.TileSprite(game, j * board.size, i * board.size, board.size, board.size, 'terrain', frame);
       tile.inputEnabled = true;
       tile.events.onInputDown.add(() => {
@@ -73,13 +86,34 @@ export const createDarkTiles = (game:Phaser.Game, board:IBoardData):Phaser.Group
   return group;
 };
 
+export const createProps = (group:Phaser.Group, board:IBoardData, levelData:ILevelData):void => {
+  const numCells = boardUtils.countCells(board);
+  const numItems = Math.round(numCells * levelData.coefs.propOccupation * randomBetween(1 - levelData.coefs.propVariation, 1 + levelData.coefs.propVariation));
+
+  let type:number, propData:IProp, prop:MapElement, cell:ICell, point:IPoint;
+
+  for (let i = 0; i < numItems; i++) {
+    type = randomBetween(0, levelData.propTypes.length, true);
+
+    propData = levelData.propTypes[type];
+
+    cell = getFreeCell(group, board);
+    point = boardUtils.getXYFromCell(cell, board);
+
+    prop = new MapElement(group.game, point.x, point.y, board.size, 'terrain', propData.frames);
+    prop.inputEnabled = false;
+    prop.visible = false;
+    group.add(prop);
+  }
+};
+
 export const createItems = (group:Phaser.Group, board:IBoardData, levelData:ILevelData, onCollect:Function):void => {
   const numCells = boardUtils.countCells(board);
   const numItems = Math.round(
     numCells * levelData.coefs.itemOccupation * randomBetween(1 - levelData.coefs.itemVariation, 1 + levelData.coefs.itemVariation)
   );
 
-  let type:number, itemData:any, item:Phaser.TileSprite, cell:ICell, point:IPoint;
+  let type:number, itemData:IItem, item:Item, cell:ICell, point:IPoint;
 
   const createListener = (cell, item) => () => onCollect(cell, item);
 
@@ -91,8 +125,7 @@ export const createItems = (group:Phaser.Group, board:IBoardData, levelData:ILev
     cell = getFreeCell(group, board);
     point = boardUtils.getXYFromCell(cell, board);
 
-    item = new Phaser.TileSprite(group.game, point.x, point.y, board.size, board.size, 'items', 10);
-    item.anchor.set(.5, .5);
+    item = new Item(group.game, point.x, point.y, board.size, itemData);
     item.visible = false;
     item.inputEnabled = true;
     item.events.onInputDown.add(createListener(cell, item));
@@ -101,40 +134,78 @@ export const createItems = (group:Phaser.Group, board:IBoardData, levelData:ILev
   }
 };
 
-export const createKey = (group:Phaser.Group, cell:ICell, board:IBoardData, onCollect:Function):void => {
+export const createEnemies = (group:Phaser.Group, board:IBoardData, levelData:ILevelData, onAttack:Function):void => {
+  const numCells = boardUtils.countCells(board);
+  const numItems = Math.round(
+    numCells * levelData.coefs.enemyOccupation * randomBetween(1 - levelData.coefs.enemyVariation, 1 + levelData.coefs.enemyVariation)
+  );
+
+  let type:number, enemyData:IEnemy, enemy:Enemy, cell:ICell, point:IPoint;
+
+  const createListener = (cell:ICell, enemy:Enemy) => () => onAttack(cell, enemy);
+
+  for (let i = 0; i < numItems; i++) {
+    type = randomBetween(0, levelData.enemyTypes.length, true);
+
+    enemyData = levelData.enemyTypes[type];
+
+    cell = getFreeCell(group, board);
+    point = boardUtils.getXYFromCell(cell, board);
+
+    enemy = new Enemy(group.game, point.x, point.y, board.size, enemyData);
+    enemy.visible = false;
+    enemy.inputEnabled = true;
+    enemy.events.onInputDown.add(createListener(cell, enemy));
+
+    group.add(enemy);
+  }
+};
+
+export const createKey = (group:Phaser.Group, board:IBoardData, onCollect:Function):ICell => {
+  const cell:ICell = getFreeCell(group, board);
   const position:IPoint = boardUtils.getXYFromCell(cell, board);
-  const key = new Phaser.TileSprite(group.game, position.x, position.y, board.size, board.size, 'items', 6);
-  key.anchor.set(.5, .5);
+  const key = new MapElement(group.game, position.x, position.y, board.size, 'items', [6]);
+  key.visible = false;
   key.inputEnabled = true;
   key.events.onInputDown.add(() => {
     onCollect(cell, key);
   });
-  key.visible = false;
   group.add(key);
+
+  return cell;
 };
 
-export const createEntrance = (group:Phaser.Group, cell:ICell, board:IBoardData):void => {
+export const createExit = (group:Phaser.Group, board:IBoardData, onExit:Function):ICell => {
+  const cell = getFreeCell(group, board);
+
+  return cell;
+};
+
+export const createEntrance = (group:Phaser.Group, board:IBoardData):ICell => {
+  const cell = getFreeCell(group, board);
   const position = boardUtils.getXYFromCell(cell, board);
   const entrance = new Phaser.TileSprite(group.game, position.x, position.y, board.size, board.size, 'terrain', 330);
   entrance.anchor.set(.5, .5);
   group.add(entrance);
-};
 
-export const createExit = (group:Phaser.Group, cell:ICell, board:IBoardData, onCollect:Function):void => {
-
-};
-
-export const createEnemies = (group:Phaser.Group, levelData:ILevelData):void => {
-
+  return cell;
 };
 
 export const clearDarknessTile = (darkTiles:Phaser.Group, mapElements:Phaser.Group, cell:ICell, board:IBoardData, considerEnemies:boolean=true) => {
   const cells:ICell[] = [ cell, ...boardUtils.getSurroundingCells(cell, board) ];
 
   if (considerEnemies) {
-    let hasEnemy:boolean = false;
+    const hasMonster = cells.some((c:ICell) => {
+      const point = boardUtils.getXYFromCell(c, board);
 
-    if (hasEnemy) {
+      const enemy = mapElements.children.find(
+        (el:MapElement) => (el instanceof Enemy && el.x === point.x && el.y === point.y)
+      ) as Enemy;
+
+      return enemy && enemy.alive && enemy.visible;
+    });
+
+    if (hasMonster) {
       return;
     }
   }
@@ -144,9 +215,9 @@ export const clearDarknessTile = (darkTiles:Phaser.Group, mapElements:Phaser.Gro
     const darkTile:Phaser.TileSprite = darkTiles.children[index] as Phaser.TileSprite;
     const point = boardUtils.getXYFromCell(c, board);
 
-    const mapElement = mapElements.children.find((el:Phaser.TileSprite) => el.x === point.x && el.y === point.y);
+    const mapElement = mapElements.children.find((el:Phaser.TileSprite) => el.x === point.x && el.y === point.y) as MapElement;
 
-    if (mapElement) {
+    if (mapElement && mapElement.alive) {
       mapElement.visible = true;
     }
 
@@ -154,56 +225,4 @@ export const clearDarknessTile = (darkTiles:Phaser.Group, mapElements:Phaser.Gro
       darkTile.alive = darkTile.exists = darkTile.visible = false;
     });
   });
-
-  /*const tiles:ICell[] = boardUtils.getSurroundingCells(cell, board);
-
-  console.log('Clear for', cell, tiles);
-
-  let darkTile:Phaser.TileSprite, darkTileCell:ICell, i:number ,j:number;
-
-  if (considerEnemies) {
-    let enemy:Phaser.TileSprite, enemyCell:ICell;
-    let hasMonster:boolean = false;
-
-    for(i = 0; i < tiles.length; i++) {
-      for(j = 0; j < mapElements.length; j++) {
-        enemy = mapElements.children[j] as Phaser.TileSprite;
-        enemyCell = boardUtils.getCellFromIndex(j, board);
-
-        if(enemy.alive && enemy.data.type === 'enemy' && enemy.visible && enemyCell.row === tiles[i].row && enemyCell.col === tiles[i].col) {
-          hasMonster = true;
-          break;
-        }
-      }
-
-      if (hasMonster) {
-        return;
-      }
-    }
-  }
-
-  //find dark tiles to kill
-  tiles.forEach((currTile:ICell) => {
-    for (i = 0; i < darkTiles.length; i++) {
-      darkTile = darkTiles.children[i] as Phaser.TileSprite;
-      darkTileCell = boardUtils.getCellFromIndex(i, board);
-
-      //check if it matches
-      if (darkTile.alive && currTile.row === darkTileCell.row && currTile.col === darkTileCell.col) {
-        let mapElement:Phaser.TileSprite, mapElementCell:ICell;
-        for (j = 0; j < mapElements.length; j++) {
-          mapElement = mapElements.children[j] as Phaser.TileSprite;
-          mapElementCell = boardUtils.getCellFromIndex(j, board);
-
-          if (mapElement.alive && mapElementCell.row === darkTileCell.row && mapElementCell.col === darkTileCell.col) {
-            mapElement.visible = true;
-            break;
-          }
-        }
-
-        darkTile.destroy();
-        break;
-      }
-    }
-  });*/
 };

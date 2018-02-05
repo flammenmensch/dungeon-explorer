@@ -1,30 +1,76 @@
 {
   "coefs": {
-    "itemOccupation": 0.2,
+    "propOccupation": 0.1,
+    "propVariation": 0.1,
+    "itemOccupation": 0.1,
     "itemVariation": 0.2,
-    "enemyOccupation": 0.15,
+    "enemyOccupation": 0.05,
     "enemyVariation": 0.2,
     "levelIncrement": 1.2
   },
+  "propTypes": [
+    {
+      "name": "coffin",
+      "frames": [631]
+    },
+    {
+      "name": "barrel",
+      "frames": [625]
+    },
+    {
+      "name": "table 1",
+      "frames": [633]
+    },
+    {
+      "name": "table 2",
+      "frames": [634]
+    },
+    {
+      "name": "garbage 1",
+      "frames": [651]
+    },
+    {
+      "name": "garbage 2",
+      "frames": [652]
+    },
+    {
+      "name": "garbage 3",
+      "frames": [653]
+    },
+    {
+      "name": "garbage 4",
+      "frames": [654]
+    }
+  ],
   "itemTypes": [
     {
       "health": 1,
-      "asset": "cherry",
+      "name": "Health potion",
+      "frames": [10],
       "type": "consumable"
     },
     {
       "attack": 1,
-      "asset": "sword",
+      "name": "Old sword",
+      "frames": [44],
+      "type": "consumable"
+    },
+    {
+      "attack": 5,
+      "name": "Great axe",
+      "frames": [52],
       "type": "consumable"
     },
     {
       "defense": 1,
-      "asset": "shield",
+      "name": "Wooden shield",
+      "frames": [110],
       "type": "consumable"
     },
     {
       "gold": 10,
-      "asset": "chest",
+      "name": "Gold chest",
+      "frames": [30],
       "type": "consumable"
     }
   ],
@@ -33,35 +79,40 @@
       "attack": 1,
       "defense": 1,
       "health": 2,
-      "asset": "snake",
+      "name": "Poisonous snake",
+      "frames": [220, 221, 222, 223],
       "gold": 2
     },
     {
       "attack": 1,
       "defense": 2,
       "health": 3,
-      "asset": "skeleton",
+      "name": "Skeleton",
+      "frames": [120, 121, 122, 123],
       "gold": 4
     },
     {
       "attack": 2,
       "defense": 2,
       "health": 5,
-      "asset": "mummy",
+      "name": "Mummy",
+      "frames": [372, 373, 374, 375],
       "gold": 8
     },
     {
       "attack": 3,
       "defense": 3,
       "health": 6,
-      "asset": "demon",
+      "name": "demon",
+      "frames": [300, 301, 302, 303],
       "gold": 12
     },
     {
       "attack": 2,
       "defense": 1,
       "health": 4,
-      "asset": "orc",
+      "name": "Ghost",
+      "frames": [432, 433, 434, 435],
       "gold": 6
     }
   ]

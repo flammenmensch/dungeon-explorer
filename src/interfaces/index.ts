@@ -22,7 +22,8 @@ export interface IPlayerStats {
   hasKey:boolean;
 }
 
-export interface IItemType {
+export interface IItem {
+  name:string;
   health?:number;
   attack?:number;
   defense?:number;
@@ -31,7 +32,8 @@ export interface IItemType {
   frames:number[];
 }
 
-export interface IEnemyType {
+export interface IEnemy {
+  name:string;
   attack:number;
   defense:number;
   health:number;
@@ -39,16 +41,24 @@ export interface IEnemyType {
   frames:number[];
 }
 
+export interface IProp {
+  name:string;
+  frames:number[];
+}
+
 export interface ILevelData {
   coefs: {
+    propOccupation:number;
+    propVariation:number;
     itemOccupation:number;
     itemVariation:number;
     enemyOccupation:number;
     enemyVariation:number;
     levelIncrement:number;
   };
-  itemTypes:IItemType[];
-  enemyTypes:IEnemyType[];
+  itemTypes:IItem[];
+  enemyTypes:IEnemy[];
+  propTypes:IProp[];
 }
 
 export interface IGameData {
