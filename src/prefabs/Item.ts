@@ -1,3 +1,4 @@
+/*
 import GameState from '../states/GameState';
 import Board from './Board';
 
@@ -47,7 +48,21 @@ export default class Item extends Phaser.TileSprite {
       this.__state.playerStats.defense += this.__data.defense;
       this.__state.playerStats.gold += this.__data.gold;
 
+      this.__state.refreshStats();
+
       this.destroy();
+    } else if (this.__data.type === 'key') {
+      this.__state.playerStats.hasKey = true;
+
+      this.__state.refreshStats();
+    } else if (this.__data.type === 'exit') {
+      if (this.__state.playerStats.hasKey) {
+        this.__state.playerStats.hasKey = false;
+        this.__state.nextLevel();
+      }
     }
+
+    this.__board.clearDarknessTile(this, true);
   }
 }
+*/

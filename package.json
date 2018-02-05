@@ -11,10 +11,12 @@
     "phaser-ce": "^2.10.0"
   },
   "devDependencies": {
+    "@types/jest": "^22.1.1",
     "@types/node": "^9.3.0",
     "clean-webpack-plugin": "^0.1.17",
     "copy-webpack-plugin": "^4.3.1",
     "expose-loader": "^0.7.4",
+    "jest": "^22.1.4",
     "ts-loader": "^3.3.1",
     "tslint": "^5.9.1",
     "tslint-loader": "^3.5.3",
@@ -24,6 +26,15 @@
   },
   "scripts": {
     "start": "webpack-dev-server --config webpack.config.js --progress --colors --watch --open",
+    "test": "jest",
+    "test:watch": "jest --watch",
     "build": "webpack --progress --colors"
+  },
+  "jest": {
+    "moduleFileExtensions": ["ts", "tsx", "js"],
+    "transform": {
+      "^.+\\.(ts|tsx)$": "<rootDir>/__tests__/preprocessor.js"
+    },
+    "testMatch": ["**/__tests__/*.(ts|tsx)"]
   }
 }

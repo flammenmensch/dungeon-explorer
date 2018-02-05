@@ -1,9 +1,11 @@
+/*
 import GameState from '../states/GameState';
 
 interface IBoardConfig {
   rows:number;
   cols:number;
   tileSize:number;
+  levelData:any;
 }
 
 interface ITileCoordinates {
@@ -22,6 +24,14 @@ export default class Board {
 
   protected __game:Phaser.Game;
 
+  protected __coefs:any;
+
+  protected __darkTiles:Phaser.Group;
+
+  protected __mapElements:Phaser.Group;
+
+  protected __levelData:any;
+
   protected __tileCoordinatesMap:Map<Phaser.TileSprite, ITileCoordinates>;
 
   constructor(state:GameState, config:IBoardConfig) {
@@ -30,6 +40,11 @@ export default class Board {
     this.__tileSize = config.tileSize;
     this.__state = state;
     this.__game = state.game;
+    this.__darkTiles = state.darkTiles;
+    this.__mapElements = state.mapElements;
+    this.__levelData = config.levelData;
+    this.__coefs = this.__levelData.coefs;
+
 
     this.__tileCoordinatesMap = new Map();
 
@@ -40,6 +55,8 @@ export default class Board {
 
         this.__state.backgroundTiles.add(tile);
         this.__tileCoordinatesMap.set(tile, { row: i, col: j });
+
+
       }
     }
   }
@@ -60,14 +77,36 @@ export default class Board {
     return this.__cols;
   }
 
-  getXYFromRowCol(coordinates:ITileCoordinates):Phaser.Point {
-    return new Phaser.Point(
-      coordinates.col * this.__tileSize + this.__tileSize * .5,
-      coordinates.row * this.__tileSize + this.__tileSize * .5
-    );
+  initLevel():void {
+    this.initDarkness();
+    this.initItems();
+    this.initEnemies();
+    this.initExit();
   }
 
-  getSurroundingTiles(coordinates:ITileCoordinates):Array<ITileCoordinates> {
+  initDarkness():void {
+    let i:number, j:number, tile:Phaser.TileSprite;
+
+    for (i = 0; i < this.__rows; i++) {
+      for (j = 0; j < this.__cols; j++) {
+        //tile = new Phaser.TileSprite(this.__game,)
+      }
+    }
+  }
+
+  initItems():void {
+
+  }
+
+  initEnemies():void {
+
+  }
+
+  initExit():void {
+
+  }
+
+  getSurrounding(coordinates:ITileCoordinates):Array<ITileCoordinates> {
     const adjacentTiles:Array<ITileCoordinates> = [];
     const relativePositions = [
       { row:  1, col: -1 },
@@ -92,17 +131,53 @@ export default class Board {
     return adjacentTiles;
   }
 
+  getXYFromRowCol(coordinates:ITileCoordinates):Phaser.Point {
+    return new Phaser.Point(
+      coordinates.col * this.__tileSize + this.__tileSize * .5,
+      coordinates.row * this.__tileSize + this.__tileSize * .5
+    );
+  }
+
+  getFreeCell():ITileCoordinates {
+    const len = this.__mapElements.length;
+
+    let row:number, col:number, i:number;
+    let freeCell:ITileCoordinates, foundCell:boolean;
+    let currentCell:ITileCoordinates, currentTile:Phaser.TileSprite;
+
+    while (!freeCell) {
+      foundCell = false;
+
+      row = this.__game.rnd.integerInRange(0, this.__rows - 1);
+      col = this.__game.rnd.integerInRange(0, this.__cols - 1);
+
+      for (i = 0; i < len; i++) {
+        currentTile = this.__mapElements.children[i] as Phaser.TileSprite;
+        currentCell = this.__tileCoordinatesMap.get(currentTile);
+        if (currentTile.alive && currentCell.row === row && currentCell.col === col) {
+          foundCell = true;
+          break;
+        }
+      }
+
+      if (!foundCell) {
+        freeCell = { row, col };
+      }
+    }
+
+    return freeCell;
+  }
+
   protected createTile(x:number, y:number):Phaser.TileSprite {
     const frame:number = this.__game.rnd.integerInRange(205, 208);
     const tile:Phaser.TileSprite = new Phaser.TileSprite(this.__game, x * this.__tileSize, y * this.__tileSize, this.__tileSize, this.__tileSize, 'terrain', frame);
 
     tile.inputEnabled = true;
     tile.events.onInputDown.add((t) => {
-      const coordinates = this.__tileCoordinatesMap.get(t);
-      console.log(this.getSurroundingTiles(coordinates));
-      t.alpha = 0.5;
+      this.clearDarknessTile(t, true);
     });
 
     return tile;
   }
 }
+*/

@@ -9,6 +9,8 @@ export default class PreloadState extends Phaser.State {
     this.load.spritesheet('heroes', 'assets/images/uf_heroes.png', 48, 48, undefined, 0, 0);
     this.load.spritesheet('items', 'assets/images/uf_items.png', 48, 48, undefined, 0, 0);
     this.load.spritesheet('terrain', 'assets/images/uf_terrain.png', 48, 48, undefined, 0, 0);
+
+    this.load.json('gameBaseData', 'assets/data/gameBaseData.json');
   }
   create() {
     this.state.start('Game');
