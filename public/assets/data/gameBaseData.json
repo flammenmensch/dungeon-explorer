@@ -4,7 +4,7 @@
     "propVariation": 0.1,
     "itemOccupation": 0.1,
     "itemVariation": 0.2,
-    "enemyOccupation": 0.05,
+    "enemyOccupation": 0.2,
     "enemyVariation": 0.2,
     "levelIncrement": 1.2
   },
@@ -53,16 +53,12 @@
         "frames": [654]
       },
       {
+        "name": "box",
+        "frames": [624]
+      },
+      {
         "name": "barrel",
         "frames": [625]
-      },
-      {
-        "name": "table 1",
-        "frames": [633]
-      },
-      {
-        "name": "table 2",
-        "frames": [634]
       }
     ]
   },
@@ -73,6 +69,10 @@
       "props": [
         {
           "name": "coffin",
+          "frames": [629]
+        },
+        {
+          "name": "opened coffin",
           "frames": [631]
         },
         {
@@ -84,7 +84,7 @@
           "frames": [627]
         }
       ],
-      "exit": [450],
+      "exit": [570],
       "key": [5],
       "enemies": [
         {
@@ -124,9 +124,17 @@
         {
           "name": "column 2",
           "frames": [636]
+        },
+        {
+          "name": "table 1",
+          "frames": [633]
+        },
+        {
+          "name": "table 2",
+          "frames": [634]
         }
       ],
-      "exit": [330],
+      "exit": [570],
       "key": [6],
       "enemies": [
         {

@@ -92,7 +92,7 @@ export const createProps = (group:Phaser.Group, board:IBoardData, levelData:ILev
 
     prop = new MapElement(group.game, point.x, point.y, board.size, 'terrain', propData.frames);
     prop.inputEnabled = false;
-    prop.visible = false;
+    //prop.visible = false;
     group.add(prop);
   }
 };

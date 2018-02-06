@@ -113,11 +113,7 @@ export default class GameState extends Phaser.State {
     });
 
     createEnemies(this.__mapElements, this.__board, this.__levelData, this.__currentTheme, this.__currentFloor, (cell:ICell, enemy:Enemy):void => {
-      const damageAttacked = Math.max(0.5, this.__playerStats.attack * Math.random() - enemy.data.defense * Math.random());
-      const damageAttacker = Math.max(0.5, enemy.data.attack * Math.random() - this.__playerStats.defense * Math.random());
-
-      enemy.data.health -= damageAttacked;
-      this.__playerStats.health -= damageAttacker;
+      enemy.data.health -= Math.max(0.5, this.__playerStats.attack * Math.random() - enemy.data.defense * Math.random());
 
       this.game.add.tween(enemy)
         .to({ tint: 0xff0000 }, 300, null, true)
@@ -131,6 +127,8 @@ export default class GameState extends Phaser.State {
 
             this.__playerStats.gold += enemy.data.gold;
             enemy.kill();
+          } else {
+            this.__playerStats.health -= Math.max(0.5, enemy.data.attack * Math.random() - this.__playerStats.defense * Math.random());
           }
 
           if (this.__playerStats.health <= 0) {
@@ -172,9 +170,7 @@ export default class GameState extends Phaser.State {
     this.__defenseLabel.text = Math.ceil(this.__playerStats.defense).toString();
     this.__goldLabel.text = Math.ceil(this.__playerStats.gold).toString();
 
-    this.__keyIcon.visible = this.__playerStats.hasKey;
-
-    //this.__levelLabel.text = `Level ${this.__currentLevel}`;
+    this.__keyIcon.alpha = this.__playerStats.hasKey ? 1.0 : 0.25;
   }
 
   nextLevel():void {
@@ -191,7 +187,7 @@ export default class GameState extends Phaser.State {
 
     const bitmapRect = this.add.bitmapData(this.game.width, this.game.height - TILE_SIZE);
 
-    bitmapRect.ctx.fillStyle = '#000058';
+    bitmapRect.ctx.fillStyle = '#111111';
     bitmapRect.ctx.fillRect(0, 0, this.game.width, TILE_SIZE);
 
     const panel = this.add.sprite(0, y, bitmapRect);
@@ -214,9 +210,9 @@ export default class GameState extends Phaser.State {
     this.__goldIcon = this.add.tileSprite(x + TILE_SIZE * 6, y, TILE_SIZE, TILE_SIZE, 'items', 15);
     this.__goldLabel = this.add.text(x + TILE_SIZE * 7, y + 20, '999+', style);
 
-    this.__keyIcon = this.add.tileSprite(x + TILE_SIZE * 9, y, TILE_SIZE, TILE_SIZE, 'items', 6);
+    this.__keyIcon = this.add.tileSprite(x + TILE_SIZE * 9, y, TILE_SIZE, TILE_SIZE, 'items', this.__levelData.levels[this.__currentTheme].key[0]);
 
-    this.__levelLabel = this.add.text(0, 0, `${this.__levelData.levels[this.__currentTheme].name}: floor ${this.__currentFloor}`, {
+    this.__levelLabel = this.add.text(10, 10, `${this.__levelData.levels[this.__currentTheme].name}: floor ${this.__currentFloor}`, {
       ...style,
       font: '9px Pixel'
     });
