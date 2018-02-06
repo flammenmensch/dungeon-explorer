@@ -1,8 +1,7 @@
 import {
   clearDarknessTile,
   createBackgroundTiles,
-  createDarkTiles, createEnemies, createEntrance, createExit, createItems, createKey, createMapElements, createProps,
-  getFreeCell,
+  createDarkTiles, createEnemies, createEntrance, createExit, createItems, createKey, createProps,
 } from '../prefabs/Terrain';
 
 import {
@@ -14,6 +13,7 @@ import {
 import MapElement from '../prefabs/MapElement';
 import Item from '../prefabs/Item';
 import Enemy from '../prefabs/Enemy';
+import {randomBetween} from '../utils/mathUtils';
 
 const ROWS = 9;
 const COLS = 10;
@@ -21,8 +21,9 @@ const COLS = 10;
 const TILE_SIZE = 48;
 
 const defaultGameData:IGameData = {
-  currentLevel: 1,
-  playerStats: {
+  floor: 1,
+  theme: 0,
+  stats: {
     health: 25,
     attack: 2,
     defense: 1,
@@ -35,7 +36,9 @@ export default class GameState extends Phaser.State {
 
   protected __playerStats:IPlayerStats;
 
-  protected __currentLevel:number;
+  protected __currentFloor:number;
+
+  protected __currentTheme:number;
 
   protected __backgroundTiles:Phaser.Group;
 
@@ -68,20 +71,23 @@ export default class GameState extends Phaser.State {
   private __keyIcon:Phaser.TileSprite;
 
   init(data:IGameData=defaultGameData) {
-    this.__currentLevel = data.currentLevel;
-    this.__playerStats = data.playerStats;
+    this.__currentFloor = data.floor;
+    this.__playerStats = { ...data.stats };
+    this.__currentTheme = data.theme;
   }
 
   create() {
     this.__levelData = this.game.cache.getJSON('gameBaseData') as ILevelData;
 
-    this.__backgroundTiles = this.game.add.existing(createBackgroundTiles(this.game, this.__board, (cell:ICell):void => {
+    this.__backgroundTiles = this.game.add.group();
+
+    this.__mapElements = this.game.add.group();
+
+    createBackgroundTiles(this.__backgroundTiles, this.__levelData, this.__currentTheme, this.__board, (cell:ICell):void => {
       clearDarknessTile(this.__darkTiles, this.__mapElements, cell, this.__board, true);
-    }));
+    });
 
-    this.__mapElements = this.game.add.existing(createMapElements(this.game, this.__board));
-
-    createProps(this.__mapElements, this.__board, this.__levelData);
+    createProps(this.__mapElements, this.__board, this.__levelData, this.__currentTheme);
 
     createItems(this.__mapElements, this.__board, this.__levelData, (cell:ICell, item:Item) => {
       clearDarknessTile(this.__darkTiles, this.__mapElements, cell, this.__board, true);
@@ -96,7 +102,7 @@ export default class GameState extends Phaser.State {
       item.kill();
     });
 
-    createKey(this.__mapElements, this.__board, (cell:ICell, key:MapElement):void => {
+    createKey(this.__mapElements, this.__levelData.levels[this.__currentTheme].key, this.__board, (cell:ICell, key:MapElement):void => {
       clearDarknessTile(this.__darkTiles, this.__mapElements, cell, this.__board, true);
 
       this.__playerStats.hasKey = true;
@@ -106,7 +112,7 @@ export default class GameState extends Phaser.State {
       key.kill();
     });
 
-    createEnemies(this.__mapElements, this.__board, this.__levelData, (cell:ICell, enemy:Enemy):void => {
+    createEnemies(this.__mapElements, this.__board, this.__levelData, this.__currentTheme, this.__currentFloor, (cell:ICell, enemy:Enemy):void => {
       const damageAttacked = Math.max(0.5, this.__playerStats.attack * Math.random() - enemy.data.defense * Math.random());
       const damageAttacker = Math.max(0.5, enemy.data.attack * Math.random() - this.__playerStats.defense * Math.random());
 
@@ -121,7 +127,7 @@ export default class GameState extends Phaser.State {
           this.refreshStats();
 
           if (enemy.data.health <= 0) {
-            clearDarknessTile(this.__darkTiles, this.__mapElements, cell, this.__board, true);
+            clearDarknessTile(this.__darkTiles, this.__mapElements, cell, this.__board, false);
 
             this.__playerStats.gold += enemy.data.gold;
             enemy.kill();
@@ -133,9 +139,11 @@ export default class GameState extends Phaser.State {
         });
     });
 
-    /*createExit(this.__mapElements, getFreeCell(this.__mapElements, this.__board), this.__board, (cell:ICell) => {
-
-    });*/
+    createExit(this.__mapElements, this.__levelData.levels[this.__currentTheme].exit, this.__board, (cell:ICell, exit:MapElement) => {
+      if (this.__playerStats.hasKey) {
+        this.nextLevel();
+      }
+    });
 
     const entranceCell = createEntrance(this.__mapElements, this.__board);
 
@@ -144,14 +152,18 @@ export default class GameState extends Phaser.State {
     clearDarknessTile(this.__darkTiles, this.__mapElements, entranceCell, this.__board, true);
 
     this.initGui();
+
+    this.refreshStats();
   }
 
   render() {
-    //this.game.debug.spriteBounds(this.__healthIcon);
-    /*this.game.debug.spriteBounds(this.__attackIcon);
+    /*
+    this.game.debug.spriteBounds(this.__healthIcon);
+    this.game.debug.spriteBounds(this.__attackIcon);
     this.game.debug.spriteBounds(this.__defenseIcon);
-    this.game.debug.spriteBounds(this.__goldIcon);*/
-    //this.game.debug.spriteBounds(this.__keyIcon);
+    this.game.debug.spriteBounds(this.__goldIcon);
+    this.game.debug.spriteBounds(this.__keyIcon);
+    */
   }
 
   refreshStats():void {
@@ -162,49 +174,52 @@ export default class GameState extends Phaser.State {
 
     this.__keyIcon.visible = this.__playerStats.hasKey;
 
-    this.__levelLabel.text = `Level ${this.__currentLevel}`;
+    //this.__levelLabel.text = `Level ${this.__currentLevel}`;
   }
 
   nextLevel():void {
     this.game.state.start('Game', true, false, {
-      currentLevel: this.__currentLevel + 1,
-      playerStats: this.__playerStats
+      floor: this.__currentFloor + 1,
+      theme: randomBetween(0, this.__levelData.levels.length, true),
+      stats: { ...this.__playerStats, hasKey: false }
     });
   }
 
   protected initGui():void {
-    const x = this.game.width - 110;
+    const x = 0;
     const y = TILE_SIZE * ROWS;
-    const bitmapRect = this.add.bitmapData(this.game.width, this.game.height - y);
+
+    const bitmapRect = this.add.bitmapData(this.game.width, this.game.height - TILE_SIZE);
 
     bitmapRect.ctx.fillStyle = '#000058';
-    bitmapRect.ctx.fillRect(0, 0, this.game.width, this.game.height - y);
+    bitmapRect.ctx.fillRect(0, 0, this.game.width, TILE_SIZE);
 
     const panel = this.add.sprite(0, y, bitmapRect);
 
     const style = {
-      font: '16px Arial',
+      font: '12px Pixel',
       fill: '#fff',
       align: 'left'
     };
 
     this.__healthIcon = this.add.tileSprite(x, y, TILE_SIZE, TILE_SIZE, 'items', 18);
-    this.__healthLabel = this.add.text(x + TILE_SIZE, y + 18, '999+', style);
+    this.__healthLabel = this.add.text(x + TILE_SIZE, y + 20, '99+', style);
 
-    this.__attackIcon = this.add.tileSprite(x, y + TILE_SIZE, TILE_SIZE, TILE_SIZE, 'items', 44);
-    this.__attackLabel = this.add.text(x + TILE_SIZE, y + TILE_SIZE + 18, '999+', style);
+    this.__attackIcon = this.add.tileSprite(x + TILE_SIZE * 2, y, TILE_SIZE, TILE_SIZE, 'items', 44);
+    this.__attackLabel = this.add.text(x + TILE_SIZE * 3, y + 20, '99+', style);
 
-    this.__defenseIcon = this.add.tileSprite(x, y + TILE_SIZE * 2, TILE_SIZE, TILE_SIZE, 'items', 224);
-    this.__defenseLabel = this.add.text(x + TILE_SIZE, y + TILE_SIZE * 2 + 18, '999+', style);
+    this.__defenseIcon = this.add.tileSprite(x + TILE_SIZE * 4, y, TILE_SIZE, TILE_SIZE, 'items', 224);
+    this.__defenseLabel = this.add.text(x + TILE_SIZE * 5, y + 20, '99+', style);
 
-    this.__goldIcon = this.add.tileSprite(x, y + TILE_SIZE * 3, TILE_SIZE, TILE_SIZE, 'items', 15);
-    this.__goldLabel = this.add.text(x + TILE_SIZE, y + TILE_SIZE * 3 + 18, '999+', style);
+    this.__goldIcon = this.add.tileSprite(x + TILE_SIZE * 6, y, TILE_SIZE, TILE_SIZE, 'items', 15);
+    this.__goldLabel = this.add.text(x + TILE_SIZE * 7, y + 20, '999+', style);
 
-    this.__keyIcon = this.add.tileSprite(this.game.width / 2 - TILE_SIZE / 2, y + TILE_SIZE * 2 - TILE_SIZE / 2, TILE_SIZE, TILE_SIZE, 'items', 6);
+    this.__keyIcon = this.add.tileSprite(x + TILE_SIZE * 9, y, TILE_SIZE, TILE_SIZE, 'items', 6);
 
-    this.__levelLabel = this.add.text(45, this.game.height - TILE_SIZE / 2, 'Level 1', style);
-
-    this.refreshStats();
+    this.__levelLabel = this.add.text(0, 0, `${this.__levelData.levels[this.__currentTheme].name}: floor ${this.__currentFloor}`, {
+      ...style,
+      font: '9px Pixel'
+    });
   }
 
   protected gameOver():void {

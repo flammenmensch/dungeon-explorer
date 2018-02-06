@@ -46,6 +46,15 @@ export interface IProp {
   frames:number[];
 }
 
+export interface ILevel {
+  name:string;
+  tiles:number[];
+  props:IProp[];
+  enemies:IEnemy[];
+  exit:number[];
+  key:number[];
+}
+
 export interface ILevelData {
   coefs: {
     propOccupation:number;
@@ -56,12 +65,16 @@ export interface ILevelData {
     enemyVariation:number;
     levelIncrement:number;
   };
-  itemTypes:IItem[];
-  enemyTypes:IEnemy[];
-  propTypes:IProp[];
+  common: {
+    props:IProp[];
+    enemies:IEnemy[];
+  };
+  levels:ILevel[];
+  items:IItem[];
 }
 
 export interface IGameData {
-  currentLevel:number;
-  playerStats:IPlayerStats;
+  floor:number;
+  theme:number;
+  stats:IPlayerStats;
 }

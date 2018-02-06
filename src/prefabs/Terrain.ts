@@ -5,14 +5,6 @@ import MapElement from './MapElement';
 import Item from './Item';
 import Enemy from './Enemy';
 
-const tileSets = [
-  [101, 104],
-  [121, 124],
-  [141, 144],
-  [205, 208],
-  [170, 170],
-];
-
 export const getFreeCell = (group:Phaser.Group, board:IBoardData):ICell => {
   let freeCell:ICell, currentCell:ICell, foundCell:boolean;
   let currentChild:Phaser.TileSprite, row:number, col:number, i:number;
@@ -26,9 +18,11 @@ export const getFreeCell = (group:Phaser.Group, board:IBoardData):ICell => {
     col = randomBetween(0, board.cols, true);
 
     for (i = 0; i < len; i++) {
-      // FIXME Incorrect cell calculation
-      currentCell = boardUtils.getCellFromIndex(i, board);
       currentChild = group.children[i] as Phaser.TileSprite;
+      currentCell = boardUtils.getCellFromXY({
+        x: currentChild.x,
+        y: currentChild.y
+      }, board);
       if (currentChild && currentChild.alive && currentCell.row === row && currentCell.col === col) {
         foundCell = true;
         break;
@@ -43,16 +37,15 @@ export const getFreeCell = (group:Phaser.Group, board:IBoardData):ICell => {
   return freeCell;
 };
 
-export const createBackgroundTiles = (game:Phaser.Game, board:IBoardData, onInput:Function):Phaser.Group => {
-  const group = new Phaser.Group(game);
-
+export const createBackgroundTiles = (group:Phaser.Group, levelData:ILevelData, theme:number, board:IBoardData, onInput:Function):void => {
   let frame:number, tile:Phaser.TileSprite;
-  const selectedSet = game.rnd.integerInRange(0, tileSets.length - 1);
+
+  const level = levelData.levels[theme];
 
   for (let i:number = 0; i < board.rows; i++) {
     for (let j:number = 0; j < board.cols; j++) {
-      frame = game.rnd.integerInRange(tileSets[selectedSet][0], tileSets[selectedSet][1]);
-      tile = new Phaser.TileSprite(game, j * board.size, i * board.size, board.size, board.size, 'terrain', frame);
+      frame = randomBetween(0, level.tiles.length, true);
+      tile = new Phaser.TileSprite(group.game, j * board.size, i * board.size, board.size, board.size, 'terrain', level.tiles[frame]);
       tile.inputEnabled = true;
       tile.events.onInputDown.add(() => {
         onInput({ row: i, col: j }, tile);
@@ -61,12 +54,6 @@ export const createBackgroundTiles = (game:Phaser.Game, board:IBoardData, onInpu
       group.add(tile);
     }
   }
-
-  return group;
-};
-
-export const createMapElements = (game:Phaser.Game, board:IBoardData):Phaser.Group => {
-  return new Phaser.Group(game);
 };
 
 export const createDarkTiles = (game:Phaser.Game, board:IBoardData):Phaser.Group => {
@@ -86,16 +73,19 @@ export const createDarkTiles = (game:Phaser.Game, board:IBoardData):Phaser.Group
   return group;
 };
 
-export const createProps = (group:Phaser.Group, board:IBoardData, levelData:ILevelData):void => {
+export const createProps = (group:Phaser.Group, board:IBoardData, levelData:ILevelData, levelIndex:number):void => {
   const numCells = boardUtils.countCells(board);
   const numItems = Math.round(numCells * levelData.coefs.propOccupation * randomBetween(1 - levelData.coefs.propVariation, 1 + levelData.coefs.propVariation));
+
+  const currentLevel = levelData.levels[levelIndex];
+  const props = [ ...levelData.common.props, ...currentLevel.props ];
 
   let type:number, propData:IProp, prop:MapElement, cell:ICell, point:IPoint;
 
   for (let i = 0; i < numItems; i++) {
-    type = randomBetween(0, levelData.propTypes.length, true);
+    type = randomBetween(0, props.length, true);
 
-    propData = levelData.propTypes[type];
+    propData = props[type];
 
     cell = getFreeCell(group, board);
     point = boardUtils.getXYFromCell(cell, board);
@@ -118,9 +108,9 @@ export const createItems = (group:Phaser.Group, board:IBoardData, levelData:ILev
   const createListener = (cell, item) => () => onCollect(cell, item);
 
   for (let i = 0; i < numItems; i++) {
-    type = randomBetween(0, levelData.itemTypes.length, true);
+    type = randomBetween(0, levelData.items.length, true);
 
-    itemData = levelData.itemTypes[type];
+    itemData = levelData.items[type];
 
     cell = getFreeCell(group, board);
     point = boardUtils.getXYFromCell(cell, board);
@@ -128,31 +118,40 @@ export const createItems = (group:Phaser.Group, board:IBoardData, levelData:ILev
     item = new Item(group.game, point.x, point.y, board.size, itemData);
     item.visible = false;
     item.inputEnabled = true;
-    item.events.onInputDown.add(createListener(cell, item));
+    item.events.onInputDown.addOnce(createListener(cell, item));
 
     group.add(item);
   }
 };
 
-export const createEnemies = (group:Phaser.Group, board:IBoardData, levelData:ILevelData, onAttack:Function):void => {
+export const createEnemies = (group:Phaser.Group, board:IBoardData, levelData:ILevelData, levelIndex:number, floor:number, onAttack:Function):void => {
   const numCells = boardUtils.countCells(board);
   const numItems = Math.round(
     numCells * levelData.coefs.enemyOccupation * randomBetween(1 - levelData.coefs.enemyVariation, 1 + levelData.coefs.enemyVariation)
   );
 
+  const currentLevel = levelData.levels[levelIndex];
   let type:number, enemyData:IEnemy, enemy:Enemy, cell:ICell, point:IPoint;
 
   const createListener = (cell:ICell, enemy:Enemy) => () => onAttack(cell, enemy);
+  const coef = Math.pow(levelData.coefs.levelIncrement, floor);
+  const enemies = [ ...levelData.common.enemies, ...currentLevel.enemies ];
 
   for (let i = 0; i < numItems; i++) {
-    type = randomBetween(0, levelData.enemyTypes.length, true);
+    type = randomBetween(0, enemies.length, true);
 
-    enemyData = levelData.enemyTypes[type];
+    enemyData = enemies[type];
 
     cell = getFreeCell(group, board);
     point = boardUtils.getXYFromCell(cell, board);
 
-    enemy = new Enemy(group.game, point.x, point.y, board.size, enemyData);
+    enemy = new Enemy(group.game, point.x, point.y, board.size, {
+      ...enemyData,
+      attack: enemyData.attack * coef,
+      defense: enemyData.defense * coef,
+      health: enemyData.health * coef,
+      gold: enemyData.gold * coef
+    });
     enemy.visible = false;
     enemy.inputEnabled = true;
     enemy.events.onInputDown.add(createListener(cell, enemy));
@@ -161,13 +160,13 @@ export const createEnemies = (group:Phaser.Group, board:IBoardData, levelData:IL
   }
 };
 
-export const createKey = (group:Phaser.Group, board:IBoardData, onCollect:Function):ICell => {
+export const createKey = (group:Phaser.Group, frames:number[], board:IBoardData, onCollect:Function):ICell => {
   const cell:ICell = getFreeCell(group, board);
   const position:IPoint = boardUtils.getXYFromCell(cell, board);
-  const key = new MapElement(group.game, position.x, position.y, board.size, 'items', [6]);
+  const key = new MapElement(group.game, position.x, position.y, board.size, 'items', frames);
   key.visible = false;
   key.inputEnabled = true;
-  key.events.onInputDown.add(() => {
+  key.events.onInputDown.addOnce(() => {
     onCollect(cell, key);
   });
   group.add(key);
@@ -175,8 +174,18 @@ export const createKey = (group:Phaser.Group, board:IBoardData, onCollect:Functi
   return cell;
 };
 
-export const createExit = (group:Phaser.Group, board:IBoardData, onExit:Function):ICell => {
+export const createExit = (group:Phaser.Group, frames:number[], board:IBoardData, onExit:Function):ICell => {
   const cell = getFreeCell(group, board);
+  const position = boardUtils.getXYFromCell(cell, board);
+  const exit = new MapElement(group.game, position.x, position.y, board.size, 'terrain', frames);
+
+  exit.anchor.set(.5, .5);
+  exit.visible = false;
+  exit.inputEnabled = true;
+  exit.events.onInputDown.add(() => {
+    onExit(cell, exit);
+  });
+  group.add(exit);
 
   return cell;
 };
@@ -184,8 +193,7 @@ export const createExit = (group:Phaser.Group, board:IBoardData, onExit:Function
 export const createEntrance = (group:Phaser.Group, board:IBoardData):ICell => {
   const cell = getFreeCell(group, board);
   const position = boardUtils.getXYFromCell(cell, board);
-  const entrance = new Phaser.TileSprite(group.game, position.x, position.y, board.size, board.size, 'terrain', 330);
-  entrance.anchor.set(.5, .5);
+  const entrance = new MapElement(group.game, position.x, position.y, board.size, 'terrain', [571]);
   group.add(entrance);
 
   return cell;

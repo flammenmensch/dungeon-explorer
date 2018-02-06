@@ -20,7 +20,7 @@ class RPG extends Phaser.Game {
 
 const config:Phaser.IGameConfig = {
   width: 480,
-  height: 640,
+  height: 480,
   renderer: Phaser.AUTO,
   parent: 'game',
   resolution: 1

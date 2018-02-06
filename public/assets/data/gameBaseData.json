@@ -8,45 +8,171 @@
     "enemyVariation": 0.2,
     "levelIncrement": 1.2
   },
-  "propTypes": [
+  "common": {
+    "enemies": [
+      {
+        "attack": 1,
+        "defense": 2,
+        "health": 3,
+        "name": "Skeleton",
+        "frames": [120, 121, 122, 123],
+        "gold": 4
+      },
+      {
+        "attack": 1,
+        "defense": 1,
+        "health": 2,
+        "name": "Bat",
+        "frames": [180, 181, 182, 183],
+        "gold": 2
+      },
+      {
+        "attack": 1,
+        "defense": 1,
+        "health": 2,
+        "name": "Rat",
+        "frames": [200, 201, 202, 203],
+        "gold": 2
+      }
+    ],
+    "props": [
+      {
+        "name": "garbage 1",
+        "frames": [651]
+      },
+      {
+        "name": "garbage 2",
+        "frames": [652]
+      },
+      {
+        "name": "garbage 3",
+        "frames": [653]
+      },
+      {
+        "name": "garbage 4",
+        "frames": [654]
+      },
+      {
+        "name": "barrel",
+        "frames": [625]
+      },
+      {
+        "name": "table 1",
+        "frames": [633]
+      },
+      {
+        "name": "table 2",
+        "frames": [634]
+      }
+    ]
+  },
+  "levels": [
     {
-      "name": "coffin",
-      "frames": [631]
+      "name": "Crypt",
+      "tiles": [101, 102, 103, 104],
+      "props": [
+        {
+          "name": "coffin",
+          "frames": [631]
+        },
+        {
+          "name": "tombstone",
+          "frames": [626]
+        },
+        {
+          "name": "broken tombstone",
+          "frames": [627]
+        }
+      ],
+      "exit": [450],
+      "key": [5],
+      "enemies": [
+        {
+          "attack": 2,
+          "defense": 2,
+          "health": 5,
+          "name": "Mummy",
+          "frames": [372, 373, 374, 375],
+          "gold": 8
+        },
+        {
+          "attack": 2,
+          "defense": 1,
+          "health": 4,
+          "name": "Ghost",
+          "frames": [432, 433, 434, 435],
+          "gold": 6
+        },
+        {
+          "attack": 3,
+          "defense": 3,
+          "health": 6,
+          "name": "Demon",
+          "frames": [300, 301, 302, 303],
+          "gold": 12
+        }
+      ]
     },
     {
-      "name": "barrel",
-      "frames": [625]
-    },
-    {
-      "name": "table 1",
-      "frames": [633]
-    },
-    {
-      "name": "table 2",
-      "frames": [634]
-    },
-    {
-      "name": "garbage 1",
-      "frames": [651]
-    },
-    {
-      "name": "garbage 2",
-      "frames": [652]
-    },
-    {
-      "name": "garbage 3",
-      "frames": [653]
-    },
-    {
-      "name": "garbage 4",
-      "frames": [654]
+      "name": "Dungeon",
+      "tiles": [205, 206, 207, 208],
+      "props": [
+        {
+          "name": "column 1",
+          "frames": [635]
+        },
+        {
+          "name": "column 2",
+          "frames": [636]
+        }
+      ],
+      "exit": [330],
+      "key": [6],
+      "enemies": [
+        {
+          "attack": 2,
+          "defense": 2,
+          "health": 5,
+          "name": "Orc",
+          "frames": [152, 153, 154, 155],
+          "gold": 8
+        },
+        {
+          "attack": 2,
+          "defense": 1,
+          "health": 4,
+          "name": "Giant spider",
+          "frames": [192, 193, 194, 195],
+          "gold": 6
+        },
+        {
+          "attack": 3,
+          "defense": 3,
+          "health": 6,
+          "name": "Dragon",
+          "frames": [348, 349, 350, 351],
+          "gold": 12
+        }
+      ]
     }
   ],
-  "itemTypes": [
+  "items": [
     {
-      "health": 1,
+      "health": 2,
       "name": "Health potion",
       "frames": [10],
+      "type": "consumable"
+    },
+    {
+      "health": 4,
+      "name": "Large health potion",
+      "frames": [39],
+      "type": "consumable"
+    },
+    {
+      "health": 1,
+      "name": "Food",
+      "frames": [38],
       "type": "consumable"
     },
     {
@@ -72,48 +198,6 @@
       "name": "Gold chest",
       "frames": [30],
       "type": "consumable"
-    }
-  ],
-  "enemyTypes": [
-    {
-      "attack": 1,
-      "defense": 1,
-      "health": 2,
-      "name": "Poisonous snake",
-      "frames": [220, 221, 222, 223],
-      "gold": 2
-    },
-    {
-      "attack": 1,
-      "defense": 2,
-      "health": 3,
-      "name": "Skeleton",
-      "frames": [120, 121, 122, 123],
-      "gold": 4
-    },
-    {
-      "attack": 2,
-      "defense": 2,
-      "health": 5,
-      "name": "Mummy",
-      "frames": [372, 373, 374, 375],
-      "gold": 8
-    },
-    {
-      "attack": 3,
-      "defense": 3,
-      "health": 6,
-      "name": "demon",
-      "frames": [300, 301, 302, 303],
-      "gold": 12
-    },
-    {
-      "attack": 2,
-      "defense": 1,
-      "health": 4,
-      "name": "Ghost",
-      "frames": [432, 433, 434, 435],
-      "gold": 6
     }
   ]
 }
