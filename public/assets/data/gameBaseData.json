@@ -202,6 +202,24 @@
       "type": "consumable"
     },
     {
+      "defense": 1,
+      "name": "Iron helmet",
+      "frames": [202],
+      "type": "consumable"
+    },
+    {
+      "defense": 1,
+      "name": "Iron gloves",
+      "frames": [268],
+      "type": "consumable"
+    },
+    {
+      "defense": 3,
+      "name": "Iron armor",
+      "frames": [224],
+      "type": "consumable"
+    },
+    {
       "gold": 10,
       "name": "Gold chest",
       "frames": [30],
