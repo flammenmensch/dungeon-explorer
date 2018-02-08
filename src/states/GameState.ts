@@ -96,7 +96,7 @@ export default class GameState extends Phaser.State {
     createProps(this.__mapElements, this.__board, this.__levelData, this.__currentTheme);
 
     createItems(this.__mapElements, this.__board, this.__levelData, (cell:ICell, item:Item) => {
-      clearDarknessTile(this.__darkTiles, this.__mapElements, cell, this.__board, true);
+      clearDarknessTile(this.__darkTiles, this.__mapElements, cell, this.__board, true, false, false);
 
       this.__playerStats.gold += item.data.gold || 0;
       this.__playerStats.health += item.data.health || 0;
@@ -109,7 +109,7 @@ export default class GameState extends Phaser.State {
     });
 
     createKey(this.__mapElements, this.__levelData.levels[this.__currentTheme].key, this.__board, (cell:ICell, key:MapElement):void => {
-      clearDarknessTile(this.__darkTiles, this.__mapElements, cell, this.__board, true);
+      clearDarknessTile(this.__darkTiles, this.__mapElements, cell, this.__board, true, false);
 
       this.__playerStats.hasKey = true;
 
@@ -129,10 +129,11 @@ export default class GameState extends Phaser.State {
           this.refreshStats();
 
           if (enemy.data.health <= 0) {
-            clearDarknessTile(this.__darkTiles, this.__mapElements, cell, this.__board, false);
-
             this.__playerStats.gold += enemy.data.gold;
+
             enemy.kill();
+
+            clearDarknessTile(this.__darkTiles, this.__mapElements, cell, this.__board, true, false);
           } else {
             this.__playerStats.health -= Math.max(0.5, enemy.data.attack * Math.random() - this.__playerStats.defense * Math.random());
           }
@@ -155,7 +156,7 @@ export default class GameState extends Phaser.State {
     this.__darkTiles.x = this.__board.size;
     this.__darkTiles.y = this.__board.size;
 
-    clearDarknessTile(this.__darkTiles, this.__mapElements, entranceCell, this.__board, true, false);
+    clearDarknessTile(this.__darkTiles, this.__mapElements, entranceCell, this.__board, true, false, false);
 
     this.__walls = this.game.add.group();
 

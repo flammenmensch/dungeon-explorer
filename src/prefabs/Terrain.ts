@@ -19,10 +19,7 @@ export const getFreeCell = (group:Phaser.Group, board:IBoardData):ICell => {
 
     for (i = 0; i < len; i++) {
       currentChild = group.children[i] as Phaser.TileSprite;
-      currentCell = boardUtils.getCellFromXY({
-        x: currentChild.x,
-        y: currentChild.y
-      }, board);
+      currentCell = boardUtils.getCellFromXY(currentChild, board);
       if (currentChild && currentChild.alive && currentCell.row === row && currentCell.col === col) {
         foundCell = true;
         break;
@@ -92,7 +89,7 @@ export const createProps = (group:Phaser.Group, board:IBoardData, levelData:ILev
 
     prop = new MapElement(group.game, point.x, point.y, board.size, 'terrain', propData.frames);
     prop.inputEnabled = false;
-    //prop.visible = false;
+    // prop.visible = false;
     group.add(prop);
   }
 };
@@ -199,8 +196,24 @@ export const createEntrance = (group:Phaser.Group, board:IBoardData):ICell => {
   return cell;
 };
 
-export const clearDarknessTile = (darkTiles:Phaser.Group, mapElements:Phaser.Group, cell:ICell, board:IBoardData, considerEnemies:boolean=true, considerNeighbors:boolean=true) => {
+export const clearDarknessTile = (darkTiles:Phaser.Group, mapElements:Phaser.Group, cell:ICell, board:IBoardData, considerEnemies:boolean=true, considerNeighbors:boolean=true, considerClear:boolean=true) => {
   const surroundingCells:ICell[] = boardUtils.getSurroundingCells(cell, board);
+
+  if (considerClear) {
+    const currentDarkTileIndex = boardUtils.getIndexFromCell(cell, board);
+    const currentDarkTile = darkTiles.children[currentDarkTileIndex] as Phaser.TileSprite;
+
+    if (!(currentDarkTile.alive && currentDarkTile.visible && currentDarkTile.exists)) {
+      return;
+    }
+
+    const currentMapElementPoint = boardUtils.getXYFromCell(cell, board);
+    const currentMapElement = mapElements.children.find((el) => el.x === currentMapElementPoint.x && el.y === currentMapElementPoint.y);
+
+    if (currentMapElement && currentMapElement.visible) {
+      return;
+    }
+  }
 
   if (considerNeighbors) {
     const hasClearNeighbor = -1 !== surroundingCells.findIndex((c:ICell) => {
@@ -215,7 +228,7 @@ export const clearDarknessTile = (darkTiles:Phaser.Group, mapElements:Phaser.Gro
     }
   }
 
-  const cells:ICell[] = [...surroundingCells, cell];
+  const cells:ICell[] = [cell, ...surroundingCells];
 
   if (considerEnemies) {
     const hasMonster = cells.some((c:ICell) => {
@@ -261,10 +274,12 @@ export const createWalls = (group:Phaser.Group, levelData:ILevelData, theme:numb
   }
 
   // bottom walls
-  /*for (i = 0; i < board.cols; i++) {
+  /*
+  for (i = 0; i < board.cols; i++) {
     frame = randomBetween(0, levelData.levels[theme].walls.bottom.length, true);
     group.add(new Phaser.TileSprite(group.game, board.size * i + board.size, board.rows * board.size - 1, board.size, board.size, 'terrain', levelData.levels[theme].walls.bottom[frame]));
-  }*/
+  }
+  */
 
   // left walls
   for (i = 0; i < board.rows + 1; i++) {
