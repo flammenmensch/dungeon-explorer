@@ -21,6 +21,7 @@
     "tslint": "^5.9.1",
     "tslint-loader": "^3.5.3",
     "typescript": "^2.6.2",
+    "uglifyjs-webpack-plugin": "^1.1.8",
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.11.1"
   },
@@ -28,13 +29,20 @@
     "start": "webpack-dev-server --config webpack.config.js --progress --colors --watch --open",
     "test": "jest",
     "test:watch": "jest --watch",
-    "build": "webpack --progress --colors"
+    "build": "webpack --progress --colors",
+    "build:production": "webpack --env.production"
   },
   "jest": {
-    "moduleFileExtensions": ["ts", "tsx", "js"],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
     "transform": {
       "^.+\\.(ts|tsx)$": "<rootDir>/__tests__/preprocessor.js"
     },
-    "testMatch": ["**/__tests__/*.(ts|tsx)"]
+    "testMatch": [
+      "**/__tests__/*.(ts|tsx)"
+    ]
   }
 }
