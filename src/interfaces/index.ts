@@ -49,6 +49,11 @@ export interface IProp {
 export interface ILevel {
   name:string;
   tiles:number[];
+  walls: {
+    top:number[];
+    side:number[];
+    bottom:number[];
+  };
   props:IProp[];
   enemies:IEnemy[];
   exit:number[];

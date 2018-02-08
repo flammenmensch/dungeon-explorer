@@ -1,7 +1,7 @@
 import {
   clearDarknessTile,
   createBackgroundTiles,
-  createDarkTiles, createEnemies, createEntrance, createExit, createItems, createKey, createProps,
+  createDarkTiles, createEnemies, createEntrance, createExit, createItems, createKey, createProps, createWalls,
 } from '../prefabs/Terrain';
 
 import {
@@ -15,7 +15,7 @@ import Item from '../prefabs/Item';
 import Enemy from '../prefabs/Enemy';
 import {randomBetween} from '../utils/mathUtils';
 
-const ROWS = 9;
+const ROWS = 10;
 const COLS = 10;
 
 const TILE_SIZE = 48;
@@ -45,6 +45,8 @@ export default class GameState extends Phaser.State {
   protected __mapElements:Phaser.Group;
 
   protected __darkTiles:Phaser.Group;
+
+  protected __walls:Phaser.Group;
 
   protected __levelData:ILevelData;
 
@@ -80,8 +82,12 @@ export default class GameState extends Phaser.State {
     this.__levelData = this.game.cache.getJSON('gameBaseData') as ILevelData;
 
     this.__backgroundTiles = this.game.add.group();
+    this.__backgroundTiles.x = this.__board.size;
+    this.__backgroundTiles.y = this.__board.size;
 
     this.__mapElements = this.game.add.group();
+    this.__mapElements.x = this.__board.size;
+    this.__mapElements.y = this.__board.size;
 
     createBackgroundTiles(this.__backgroundTiles, this.__levelData, this.__currentTheme, this.__board, (cell:ICell):void => {
       clearDarknessTile(this.__darkTiles, this.__mapElements, cell, this.__board, true);
@@ -146,8 +152,14 @@ export default class GameState extends Phaser.State {
     const entranceCell = createEntrance(this.__mapElements, this.__board);
 
     this.__darkTiles = createDarkTiles(this.game, this.__board);
+    this.__darkTiles.x = this.__board.size;
+    this.__darkTiles.y = this.__board.size;
 
     clearDarknessTile(this.__darkTiles, this.__mapElements, entranceCell, this.__board, true);
+
+    this.__walls = this.game.add.group();
+
+    createWalls(this.__walls, this.__levelData, this.__currentTheme, this.__board);
 
     this.initGui();
 
@@ -183,7 +195,7 @@ export default class GameState extends Phaser.State {
 
   protected initGui():void {
     const x = 0;
-    const y = TILE_SIZE * ROWS;
+    const y = TILE_SIZE * ROWS + TILE_SIZE;
 
     const bitmapRect = this.add.bitmapData(this.game.width, this.game.height - TILE_SIZE);
 
@@ -210,7 +222,7 @@ export default class GameState extends Phaser.State {
     this.__goldIcon = this.add.tileSprite(x + TILE_SIZE * 6, y, TILE_SIZE, TILE_SIZE, 'items', 15);
     this.__goldLabel = this.add.text(x + TILE_SIZE * 7, y + 20, '999+', style);
 
-    this.__keyIcon = this.add.tileSprite(x + TILE_SIZE * 9, y, TILE_SIZE, TILE_SIZE, 'items', this.__levelData.levels[this.__currentTheme].key[0]);
+    this.__keyIcon = this.add.tileSprite(x + TILE_SIZE * COLS + TILE_SIZE, y, TILE_SIZE, TILE_SIZE, 'items', this.__levelData.levels[this.__currentTheme].key[0]);
 
     this.__levelLabel = this.add.text(10, 10, `${this.__levelData.levels[this.__currentTheme].name}: floor ${this.__currentFloor}`, {
       ...style,

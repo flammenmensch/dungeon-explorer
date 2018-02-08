@@ -234,3 +234,32 @@ export const clearDarknessTile = (darkTiles:Phaser.Group, mapElements:Phaser.Gro
     });
   });
 };
+
+export const createWalls = (group:Phaser.Group, levelData:ILevelData, theme:number, board:IBoardData):void => {
+  // create top walls;
+  let i:number, frame:number;
+
+  // top walls
+  for (i = 0; i < board.cols; i++) {
+    frame = randomBetween(0, levelData.levels[theme].walls.top.length, true);
+    group.add(new Phaser.TileSprite(group.game, board.size * i + board.size, 0, board.size, board.size, 'terrain', levelData.levels[theme].walls.top[frame]));
+  }
+
+  // bottom walls
+  /*for (i = 0; i < board.cols; i++) {
+    frame = randomBetween(0, levelData.levels[theme].walls.bottom.length, true);
+    group.add(new Phaser.TileSprite(group.game, board.size * i + board.size, board.rows * board.size - 1, board.size, board.size, 'terrain', levelData.levels[theme].walls.bottom[frame]));
+  }*/
+
+  // left walls
+  for (i = 0; i < board.rows + 1; i++) {
+    frame = randomBetween(0, levelData.levels[theme].walls.side.length, true);
+    group.add(new Phaser.TileSprite(group.game, 0, board.size * i, board.size, board.size, 'terrain', levelData.levels[theme].walls.side[frame]));
+  }
+
+  // right walls
+  for (i = 0; i < board.rows + 1; i++) {
+    frame = randomBetween(0, levelData.levels[theme].walls.side.length, true);
+    group.add(new Phaser.TileSprite(group.game, board.cols * board.size + board.size, board.size * i, board.size, board.size, 'terrain', levelData.levels[theme].walls.side[frame]));
+  }
+};
