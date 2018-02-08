@@ -199,8 +199,23 @@ export const createEntrance = (group:Phaser.Group, board:IBoardData):ICell => {
   return cell;
 };
 
-export const clearDarknessTile = (darkTiles:Phaser.Group, mapElements:Phaser.Group, cell:ICell, board:IBoardData, considerEnemies:boolean=true) => {
-  const cells:ICell[] = [ cell, ...boardUtils.getSurroundingCells(cell, board) ];
+export const clearDarknessTile = (darkTiles:Phaser.Group, mapElements:Phaser.Group, cell:ICell, board:IBoardData, considerEnemies:boolean=true, considerNeighbors:boolean=true) => {
+  const surroundingCells:ICell[] = boardUtils.getSurroundingCells(cell, board);
+
+  if (considerNeighbors) {
+    const hasClearNeighbor = -1 !== surroundingCells.findIndex((c:ICell) => {
+      const index = boardUtils.getIndexFromCell(c, board);
+      const darkTile = darkTiles.children[index] as Phaser.TileSprite;
+
+      return !(darkTile.alive && darkTile.visible && darkTile.exists);// TODO Refactor
+    });
+
+    if (!hasClearNeighbor) {
+      return;
+    }
+  }
+
+  const cells:ICell[] = [...surroundingCells, cell];
 
   if (considerEnemies) {
     const hasMonster = cells.some((c:ICell) => {

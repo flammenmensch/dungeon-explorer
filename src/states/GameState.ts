@@ -155,7 +155,7 @@ export default class GameState extends Phaser.State {
     this.__darkTiles.x = this.__board.size;
     this.__darkTiles.y = this.__board.size;
 
-    clearDarknessTile(this.__darkTiles, this.__mapElements, entranceCell, this.__board, true);
+    clearDarknessTile(this.__darkTiles, this.__mapElements, entranceCell, this.__board, true, false);
 
     this.__walls = this.game.add.group();
 
