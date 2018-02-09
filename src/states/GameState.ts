@@ -135,7 +135,13 @@ export default class GameState extends Phaser.State {
 
             clearDarknessTile(this.__darkTiles, this.__mapElements, cell, this.__board, true, false, false);
           } else {
-            this.__playerStats.health -= Math.max(0.5, enemy.data.attack * Math.random() - this.__playerStats.defense * Math.random());
+            const newHealth = this.__playerStats.health - Math.max(0.5, enemy.data.attack * Math.random() - this.__playerStats.defense * Math.random());
+            if (Math.ceil(this.__playerStats.health) !== Math.ceil(newHealth)) {
+              this.camera.flash(0xcc0000, 300, false, 0.25);
+              this.camera.onFlashComplete.addOnce(() => {
+                this.__playerStats.health = newHealth;
+              });
+            }
           }
 
           if (this.__playerStats.health <= 0) {
@@ -185,10 +191,13 @@ export default class GameState extends Phaser.State {
   }
 
   nextLevel():void {
-    this.game.state.start('Game', true, false, {
-      floor: this.__currentFloor + 1,
-      theme: randomBetween(0, this.__levelData.levels.length, true),
-      stats: { ...this.__playerStats, hasKey: false }
+    this.camera.fade(0x000000);
+    this.camera.onFadeComplete.addOnce(() => {
+      this.game.state.start('Game', true, false, {
+        floor: this.__currentFloor + 1,
+        theme: randomBetween(0, this.__levelData.levels.length, true),
+        stats: { ...this.__playerStats, hasKey: false }
+      });
     });
   }
 
@@ -215,7 +224,7 @@ export default class GameState extends Phaser.State {
     this.__attackIcon = this.add.tileSprite(x + TILE_SIZE * 2, y, TILE_SIZE, TILE_SIZE, 'items', 44);
     this.__attackLabel = this.add.text(x + TILE_SIZE * 3, y + 20, '99+', style);
 
-    this.__defenseIcon = this.add.tileSprite(x + TILE_SIZE * 4, y, TILE_SIZE, TILE_SIZE, 'items', 224);
+    this.__defenseIcon = this.add.tileSprite(x + TILE_SIZE * 4, y, TILE_SIZE, TILE_SIZE, 'items', 115);
     this.__defenseLabel = this.add.text(x + TILE_SIZE * 5, y + 20, '99+', style);
 
     this.__goldIcon = this.add.tileSprite(x + TILE_SIZE * 6, y, TILE_SIZE, TILE_SIZE, 'items', 15);
@@ -230,6 +239,11 @@ export default class GameState extends Phaser.State {
   }
 
   protected gameOver():void {
-    this.game.state.start('Game');
+    this.game.input.enabled = false;
+    this.camera.fade(0x330000, 300, true, 1);
+    this.camera.onFadeComplete.addOnce(() => {
+      this.game.input.enabled = true;
+      this.game.state.start('GameOver');
+    });
   }
 }

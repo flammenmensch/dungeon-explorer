@@ -5,6 +5,7 @@ import 'phaser';
 import BootState from './states/BootState';
 import PreloadState from './states/PreloadState';
 import GameState from './states/GameState';
+import GameOverState from './states/GameOverState';
 
 class RPG extends Phaser.Game {
   constructor(config:Phaser.IGameConfig) {
@@ -13,6 +14,7 @@ class RPG extends Phaser.Game {
     this.state.add('Boot', BootState);
     this.state.add('Preload', PreloadState);
     this.state.add('Game', GameState);
+    this.state.add('GameOver', GameOverState);
 
     this.state.start('Boot');
   }
