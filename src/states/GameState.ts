@@ -133,7 +133,7 @@ export default class GameState extends Phaser.State {
 
             enemy.kill();
 
-            clearDarknessTile(this.__darkTiles, this.__mapElements, cell, this.__board, true, false);
+            clearDarknessTile(this.__darkTiles, this.__mapElements, cell, this.__board, true, false, false);
           } else {
             this.__playerStats.health -= Math.max(0.5, enemy.data.attack * Math.random() - this.__playerStats.defense * Math.random());
           }
@@ -167,16 +167,6 @@ export default class GameState extends Phaser.State {
     this.refreshStats();
   }
 
-  render() {
-    /*
-    this.game.debug.spriteBounds(this.__healthIcon);
-    this.game.debug.spriteBounds(this.__attackIcon);
-    this.game.debug.spriteBounds(this.__defenseIcon);
-    this.game.debug.spriteBounds(this.__goldIcon);
-    this.game.debug.spriteBounds(this.__keyIcon);
-    */
-  }
-
   refreshStats():void {
     this.__healthLabel.text = Math.ceil(this.__playerStats.health).toString();
     this.__attackLabel.text = Math.ceil(this.__playerStats.attack).toString();
@@ -184,6 +174,14 @@ export default class GameState extends Phaser.State {
     this.__goldLabel.text = Math.ceil(this.__playerStats.gold).toString();
 
     this.__keyIcon.alpha = this.__playerStats.hasKey ? 1.0 : 0.25;
+
+    if (this.__playerStats.health < 5) {
+      this.__healthIcon.frame = 16;
+    } else if (this.__playerStats.health < 15) {
+      this.__healthIcon.frame = 17;
+    } else {
+      this.__healthIcon.frame = 18;
+    }
   }
 
   nextLevel():void {
@@ -203,7 +201,7 @@ export default class GameState extends Phaser.State {
     bitmapRect.ctx.fillStyle = '#111111';
     bitmapRect.ctx.fillRect(0, 0, this.game.width, TILE_SIZE);
 
-    const panel = this.add.sprite(0, y, bitmapRect);
+    this.add.sprite(0, y, bitmapRect);
 
     const style = {
       font: '12px Pixel',
