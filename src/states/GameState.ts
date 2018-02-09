@@ -2,6 +2,7 @@ import {
   clearDarknessTile,
   createBackgroundTiles,
   createDarkTiles, createEnemies, createEntrance, createExit, createItems, createKey, createProps, createWalls,
+  getFreeCell,
 } from '../prefabs/Terrain';
 
 import {
@@ -123,10 +124,10 @@ export default class GameState extends Phaser.State {
 
       this.game.add.tween(enemy)
         .to({ tint: 0xff0000 }, 300, null, true)
-        .onComplete.add(() => {
-          enemy.tint = 0xffffff;
+        .onComplete.addOnce(() => {
+          this.game.tweens.removeFrom(enemy);
 
-          this.refreshStats();
+          enemy.tint = 0xffffff;
 
           if (enemy.data.health <= 0) {
             this.__playerStats.gold += enemy.data.gold;
@@ -136,13 +137,15 @@ export default class GameState extends Phaser.State {
             clearDarknessTile(this.__darkTiles, this.__mapElements, cell, this.__board, true, false, false);
           } else {
             const newHealth = this.__playerStats.health - Math.max(0.5, enemy.data.attack * Math.random() - this.__playerStats.defense * Math.random());
-            if (Math.ceil(this.__playerStats.health) !== Math.ceil(newHealth)) {
+            if (Math.ceil(this.__playerStats.health) > Math.ceil(newHealth)) {
               this.camera.flash(0xcc0000, 300, false, 0.25);
               this.camera.onFlashComplete.addOnce(() => {
                 this.__playerStats.health = newHealth;
               });
             }
           }
+
+          this.refreshStats();
 
           if (this.__playerStats.health <= 0) {
             this.gameOver();
