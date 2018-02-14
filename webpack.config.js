@@ -11,10 +11,17 @@ module.exports = (env) => {
   const outputDir = isProduction('dist', 'build');
 
   return {
-    entry: path.join(__dirname, 'src/index.ts'),
+    entry: {
+      vendor: [
+        'p2',
+        'pixi',
+        'phaser',
+      ],
+      game: path.join(__dirname, 'src/index.ts')
+    },
     output: {
       path: path.join(__dirname, outputDir),
-      filename: 'dungeon-explorer.js'
+      filename: '[name].js'
     },
     resolve: {
       extensions: ['.ts', '.js'],
@@ -43,6 +50,10 @@ module.exports = (env) => {
           }
         })
       ], [])),
+      new webpack.optimize.CommonsChunkPlugin({
+        name: 'vendor',
+        minChunks: Infinity
+      }),
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': isProduction(`'production'`, `'development'`)
       }),
