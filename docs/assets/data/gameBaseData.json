@@ -1,0 +1,298 @@
+{
+  "coefs": {
+    "propOccupation": 0.1,
+    "propVariation": 0.1,
+    "itemOccupation": 0.1,
+    "itemVariation": 0.2,
+    "enemyOccupation": 0.2,
+    "enemyVariation": 0.2,
+    "levelIncrement": 1.2
+  },
+  "common": {
+    "enemies": [
+      {
+        "attack": 1,
+        "defense": 2,
+        "health": 3,
+        "name": "Skeleton",
+        "frames": [120, 121, 122, 123],
+        "gold": 4
+      },
+      {
+        "attack": 1,
+        "defense": 1,
+        "health": 2,
+        "name": "Bat",
+        "frames": [180, 181, 182, 183],
+        "gold": 2
+      },
+      {
+        "attack": 1,
+        "defense": 1,
+        "health": 2,
+        "name": "Rat",
+        "frames": [200, 201, 202, 203],
+        "gold": 2
+      }
+    ],
+    "props": [
+      {
+        "name": "garbage 1",
+        "frames": [651]
+      },
+      {
+        "name": "garbage 2",
+        "frames": [652]
+      },
+      {
+        "name": "garbage 3",
+        "frames": [653]
+      },
+      {
+        "name": "garbage 4",
+        "frames": [654]
+      },
+      {
+        "name": "box",
+        "frames": [624]
+      },
+      {
+        "name": "barrel",
+        "frames": [625]
+      }
+    ]
+  },
+  "levels": [
+    {
+      "name": "Crypt",
+      "tiles": [101, 102, 103, 104],
+      "walls": {
+        "top": [401, 402, 403, 404, 405, 406],
+        "side": [381, 382, 383, 384, 385, 386],
+        "bottom": [361, 362, 363, 364, 365, 366]
+      },
+      "props": [
+        {
+          "name": "coffin",
+          "frames": [629]
+        },
+        {
+          "name": "opened coffin",
+          "frames": [631]
+        },
+        {
+          "name": "tombstone",
+          "frames": [626]
+        },
+        {
+          "name": "broken tombstone",
+          "frames": [627]
+        }
+      ],
+      "exit": [570],
+      "key": [5],
+      "enemies": [
+        {
+          "attack": 2,
+          "defense": 2,
+          "health": 5,
+          "name": "Mummy",
+          "frames": [372, 373, 374, 375],
+          "gold": 8
+        },
+        {
+          "attack": 2,
+          "defense": 1,
+          "health": 4,
+          "name": "Ghost",
+          "frames": [432, 433, 434, 435],
+          "gold": 6
+        },
+        {
+          "attack": 3,
+          "defense": 3,
+          "health": 6,
+          "name": "Demon",
+          "frames": [300, 301, 302, 303],
+          "gold": 12
+        }
+      ]
+    },
+    {
+      "name": "Dungeon",
+      "tiles": [205, 206, 207, 208],
+      "walls": {
+        "top": [341, 342, 343, 344, 345, 346],
+        "side": [321, 322, 323, 324, 325, 326],
+        "bottom": [301, 302, 303, 304, 305, 306]
+      },
+      "props": [
+        {
+          "name": "column 1",
+          "frames": [635]
+        },
+        {
+          "name": "column 2",
+          "frames": [636]
+        },
+        {
+          "name": "table 1",
+          "frames": [633]
+        },
+        {
+          "name": "table 2",
+          "frames": [634]
+        }
+      ],
+      "exit": [570],
+      "key": [6],
+      "enemies": [
+        {
+          "attack": 2,
+          "defense": 2,
+          "health": 5,
+          "name": "Orc",
+          "frames": [152, 153, 154, 155],
+          "gold": 8
+        },
+        {
+          "attack": 2,
+          "defense": 1,
+          "health": 4,
+          "name": "Giant spider",
+          "frames": [192, 193, 194, 195],
+          "gold": 6
+        },
+        {
+          "attack": 3,
+          "defense": 3,
+          "health": 6,
+          "name": "Dragon",
+          "frames": [348, 349, 350, 351],
+          "gold": 12
+        }
+      ]
+    },
+    {
+      "name": "Prison",
+      "tiles": [205, 206, 207, 208],
+      "walls": {
+        "top": [281, 282, 283, 284, 285, 286],
+        "side": [261, 262, 263, 264, 265, 266],
+        "bottom": [241, 242, 243, 244, 245, 246]
+      },
+      "props": [
+        {
+          "name": "column 1",
+          "frames": [635]
+        },
+        {
+          "name": "column 2",
+          "frames": [636]
+        },
+        {
+          "name": "table 1",
+          "frames": [633]
+        },
+        {
+          "name": "table 2",
+          "frames": [634]
+        },
+        {
+          "name": "trap",
+          "frames": [655]
+        }
+      ],
+      "exit": [450],
+      "key": [2],
+      "enemies": [
+        {
+          "attack": 2,
+          "defense": 2,
+          "health": 5,
+          "name": "Minotaur",
+          "frames": [156, 157, 158, 159],
+          "gold": 8
+        },
+        {
+          "attack": 2,
+          "defense": 1,
+          "health": 4,
+          "name": "Overseer",
+          "frames": [272, 273, 274, 275],
+          "gold": 6
+        },
+        {
+          "attack": 3,
+          "defense": 3,
+          "health": 6,
+          "name": "Necromancer",
+          "frames": [40, 41, 42, 43],
+          "gold": 12
+        }
+      ]
+    }
+  ],
+  "items": [
+    {
+      "health": 2,
+      "name": "Health potion",
+      "frames": [10],
+      "type": "consumable"
+    },
+    {
+      "health": 4,
+      "name": "Large health potion",
+      "frames": [39],
+      "type": "consumable"
+    },
+    {
+      "health": 1,
+      "name": "Food",
+      "frames": [38],
+      "type": "consumable"
+    },
+    {
+      "attack": 1,
+      "name": "Old sword",
+      "frames": [44],
+      "type": "consumable"
+    },
+    {
+      "attack": 5,
+      "name": "Great axe",
+      "frames": [52],
+      "type": "consumable"
+    },
+    {
+      "defense": 1,
+      "name": "Wooden shield",
+      "frames": [110],
+      "type": "consumable"
+    },
+    {
+      "defense": 1,
+      "name": "Iron helmet",
+      "frames": [202],
+      "type": "consumable"
+    },
+    {
+      "defense": 1,
+      "name": "Iron gloves",
+      "frames": [268],
+      "type": "consumable"
+    },
+    {
+      "defense": 3,
+      "name": "Iron armor",
+      "frames": [224],
+      "type": "consumable"
+    },
+    {
+      "gold": 10,
+      "name": "Gold chest",
+      "frames": [30],
+      "type": "consumable"
+    }
+  ]
+}
