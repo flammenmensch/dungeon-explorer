@@ -30,7 +30,8 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "build": "webpack --progress --colors",
-    "build:production": "webpack --env.production"
+    "build:production": "webpack --env.production",
+    "build:docs": "yarn run build:production && cp -R dist/ docs/ && git add docs/* && git commit -m \"Build docs folder\" && git push"
   },
   "jest": {
     "moduleFileExtensions": [
