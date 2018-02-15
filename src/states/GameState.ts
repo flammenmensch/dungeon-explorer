@@ -21,6 +21,12 @@ const COLS = 10;
 
 const TILE_SIZE = 48;
 
+const LABEL_STYLE = {
+  font: '8px Pixel',
+  fill: '#ffffff',
+  align: 'center'
+};
+
 const defaultGameData:IGameData = {
   floor: 1,
   theme: 0,
@@ -48,6 +54,8 @@ export default class GameState extends Phaser.State {
   protected __darkTiles:Phaser.Group;
 
   protected __walls:Phaser.Group;
+
+  protected __hudMessages:Phaser.Group;
 
   protected __levelData:ILevelData;
 
@@ -117,10 +125,18 @@ export default class GameState extends Phaser.State {
       this.refreshStats();
 
       key.kill();
+
+      this.showLabel(key, 'You found the key. Find the exit', 1000);
     });
 
     createEnemies(this.__mapElements, this.__board, this.__levelData, this.__currentTheme, this.__currentFloor, (cell:ICell, enemy:Enemy):void => {
-      enemy.data.health -= Math.max(0.5, this.__playerStats.attack * Math.random() - enemy.data.defense * Math.random());
+      const damage = Math.round(
+        Math.max(0.5, this.__playerStats.attack * Math.random() - enemy.data.defense * Math.random()) * 100
+      ) / 100;
+
+      enemy.data.health -= damage;
+
+      this.showLabel(enemy, damage.toString());
 
       this.game.add.tween(enemy)
         .to({ tint: 0xff0000 }, 300, null, true)
@@ -156,6 +172,8 @@ export default class GameState extends Phaser.State {
     createExit(this.__mapElements, this.__levelData.levels[this.__currentTheme].exit, this.__board, (cell:ICell, exit:MapElement) => {
       if (this.__playerStats.hasKey) {
         this.nextLevel();
+      } else {
+        this.showLabel(exit, 'You need a key', 1000);
       }
     });
 
@@ -174,6 +192,10 @@ export default class GameState extends Phaser.State {
     this.initGui();
 
     this.refreshStats();
+
+    this.__hudMessages = this.game.add.group();
+    this.__hudMessages.x = this.__board.size;
+    this.__hudMessages.y = this.__board.size;
   }
 
   refreshStats():void {
@@ -248,5 +270,19 @@ export default class GameState extends Phaser.State {
       this.game.input.enabled = true;
       this.game.state.start('GameOver');
     });
+  }
+
+  protected showLabel(mapElement:MapElement, message:string, duration:number=500):void {
+    const label = new Phaser.Text(this.game, mapElement.x, mapElement.y, message, LABEL_STYLE);
+
+    label.anchor.setTo(.5, .5);
+
+    this.game.add.tween(label)
+      .to({ y: label.y - mapElement.height * .5, alpha: 0.25 }, duration, null, true)
+      .onComplete.addOnce(() => {
+        label.destroy(true);
+      });
+
+    this.__hudMessages.add(label);
   }
 }
