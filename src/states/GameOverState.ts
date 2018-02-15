@@ -13,8 +13,20 @@ export default class GameOverState extends Phaser.State {
     gameOverLabel.anchor.set(.5, .5);
 
     this.game.input.keyboard.addCallbacks(null, () => {
-      this.game.input.keyboard.removeCallbacks();
-      this.state.start('Game');
+      this.startGame();
     });
+
+    this.game.input.mouse.input.onTap.addOnce(() => {
+      this.startGame();
+    });
+  }
+
+  shutdown(game:Phaser.Game) {
+    super.shutdown(game);
+    this.game.input.keyboard.removeCallbacks();
+  }
+
+  protected startGame() {
+    this.state.start('Game');
   }
 }
