@@ -11,7 +11,31 @@
   "common": {
     "enemies": [
       {
-        "attack": 7,
+        "attack": 1,
+        "defense": 0,
+        "health": 1,
+        "name": "Flies",
+        "frames": [504, 505, 506, 507],
+        "gold": 1
+      },
+      {
+        "attack": 1,
+        "defense": 1,
+        "health": 1,
+        "name": "White Spider",
+        "frames": [188, 189, 190, 191],
+        "gold": 1
+      },
+      {
+        "attack": 1,
+        "defense": 2,
+        "health": 1,
+        "name": "Black Spider",
+        "frames": [196, 197, 198, 199],
+        "gold": 1
+      },
+      {
+        "attack": 3,
         "defense": 2,
         "health": 3,
         "name": "Skeleton",
@@ -19,7 +43,7 @@
         "gold": 4
       },
       {
-        "attack": 5,
+        "attack": 2,
         "defense": 1,
         "health": 2,
         "name": "Bat",
@@ -203,7 +227,7 @@
           "frames": [655]
         }
       ],
-      "exit": [450],
+      "exit": [572],
       "key": [2],
       "enemies": [
         {
@@ -229,6 +253,57 @@
           "name": "Necromancer",
           "frames": [40, 41, 42, 43],
           "gold": 12
+        }
+      ]
+    },
+    {
+      "name": "Pyramid",
+      "tiles": [141, 142, 143, 144],
+      "walls": {
+        "top": [521, 522, 523, 524, 525, 526],
+        "side": [501, 502, 503, 504, 505, 506],
+        "bottom": [481, 482, 483, 484, 485, 486]
+      },
+      "props": [
+        {
+          "name": "table 1",
+          "frames": [633]
+        },
+        {
+          "name": "table 2",
+          "frames": [634]
+        },
+        {
+          "name": "trap",
+          "frames": [655]
+        }
+      ],
+      "exit": [572],
+      "key": [0],
+      "enemies": [
+        {
+          "attack": 3,
+          "defense": 2,
+          "health": 5,
+          "name": "Snake",
+          "frames": [220, 221, 222, 223],
+          "gold": 6
+        },
+        {
+          "attack": 4,
+          "defense": 3,
+          "health": 5,
+          "name": "Mummy",
+          "frames": [372, 373, 374, 375],
+          "gold": 15
+        },
+        {
+          "attack": 8,
+          "defense": 6,
+          "health": 8,
+          "name": "Pharaoh Mummy",
+          "frames": [376, 377, 378, 379],
+          "gold": 20
         }
       ]
     }
