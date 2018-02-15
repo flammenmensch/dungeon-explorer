@@ -5,13 +5,13 @@
     "itemOccupation": 0.1,
     "itemVariation": 0.2,
     "enemyOccupation": 0.2,
-    "enemyVariation": 0.2,
+    "enemyVariation": 0.4,
     "levelIncrement": 1.2
   },
   "common": {
     "enemies": [
       {
-        "attack": 1,
+        "attack": 7,
         "defense": 2,
         "health": 3,
         "name": "Skeleton",
@@ -19,7 +19,7 @@
         "gold": 4
       },
       {
-        "attack": 1,
+        "attack": 5,
         "defense": 1,
         "health": 2,
         "name": "Bat",
@@ -27,7 +27,7 @@
         "gold": 2
       },
       {
-        "attack": 1,
+        "attack": 3,
         "defense": 1,
         "health": 2,
         "name": "Rat",
@@ -93,7 +93,7 @@
       "key": [5],
       "enemies": [
         {
-          "attack": 2,
+          "attack": 10,
           "defense": 2,
           "health": 5,
           "name": "Mummy",
@@ -101,17 +101,17 @@
           "gold": 8
         },
         {
-          "attack": 2,
-          "defense": 1,
-          "health": 4,
+          "attack": 12,
+          "defense": 4,
+          "health": 8,
           "name": "Ghost",
           "frames": [432, 433, 434, 435],
           "gold": 6
         },
         {
-          "attack": 3,
-          "defense": 3,
-          "health": 6,
+          "attack": 20,
+          "defense": 10,
+          "health": 20,
           "name": "Demon",
           "frames": [300, 301, 302, 303],
           "gold": 12
@@ -148,7 +148,7 @@
       "key": [6],
       "enemies": [
         {
-          "attack": 2,
+          "attack": 10,
           "defense": 2,
           "health": 5,
           "name": "Orc",
@@ -156,17 +156,17 @@
           "gold": 8
         },
         {
-          "attack": 2,
-          "defense": 1,
-          "health": 4,
+          "attack": 12,
+          "defense": 4,
+          "health": 8,
           "name": "Giant spider",
           "frames": [192, 193, 194, 195],
           "gold": 6
         },
         {
-          "attack": 3,
-          "defense": 3,
-          "health": 6,
+          "attack": 20,
+          "defense": 10,
+          "health": 20,
           "name": "Dragon",
           "frames": [348, 349, 350, 351],
           "gold": 12
@@ -207,25 +207,25 @@
       "key": [2],
       "enemies": [
         {
-          "attack": 2,
-          "defense": 2,
-          "health": 5,
+          "attack": 20,
+          "defense": 10,
+          "health": 20,
           "name": "Minotaur",
           "frames": [156, 157, 158, 159],
           "gold": 8
         },
         {
-          "attack": 2,
-          "defense": 1,
-          "health": 4,
+          "attack": 12,
+          "defense": 4,
+          "health": 8,
           "name": "Overseer",
           "frames": [272, 273, 274, 275],
           "gold": 6
         },
         {
-          "attack": 3,
-          "defense": 3,
-          "health": 6,
+          "attack": 10,
+          "defense": 2,
+          "health": 5,
           "name": "Necromancer",
           "frames": [40, 41, 42, 43],
           "gold": 12
